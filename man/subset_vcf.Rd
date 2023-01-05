@@ -2,7 +2,7 @@
 % Please edit documentation in R/subset_vcf.R
 \name{subset_vcf}
 \alias{subset_vcf}
-\title{Title Subset common variants vcf file to only SNPs seen in commonly expressed genes}
+\title{Subset common variants vcf file to only SNPs seen in commonly expressed genes}
 \usage{
 subset_vcf(vcf_path, sce)
 }
@@ -15,7 +15,7 @@ subset_vcf(vcf_path, sce)
 common_snps.vcf vcf file containing subset of SNPs from common variants file seen in commonly expressed genes
 }
 \description{
-Title Subset common variants vcf file to only SNPs seen in commonly expressed genes
+Subset common variants vcf file to only SNPs seen in commonly expressed genes
 }
 \examples{
 subset_vcf(common_varians.vcf, my_sce)
