@@ -4,20 +4,18 @@
 \alias{subset_vcf}
 \title{Subset common variants vcf file to only SNPs seen in commonly expressed genes}
 \usage{
-subset_vcf(vcf_path, sce)
+subset_vcf(my_vcf, sce, top_genes)
 }
 \arguments{
-\item{vcf_path}{path to common variants vcf file}
+\item{my_vcf}{path to common variants vcf file}
 
-\item{sce}{single cell experimen object}
+\item{sce}{single cell experiment object}
+
+\item{top_genes}{from previous function}
 }
 \value{
 common_snps.vcf vcf file containing subset of SNPs from common variants file seen in commonly expressed genes
 }
 \description{
 Subset common variants vcf file to only SNPs seen in commonly expressed genes
-}
-\examples{
-subset_vcf(common_varians.vcf, my_sce)
-
 }

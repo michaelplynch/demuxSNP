@@ -1,0 +1,68 @@
+---
+title: "my-vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{my-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(SNPcheck)
+```
+
+Demultiplexing in scRNAseq involves assigning cells back to their original sample, where cells from different donors, treatments types or physiological locations are sequenced together.
+
+Here, we aim to leverage information from both modalities to minimise misclassification and maximise yield.
+We note that as with other SNP based methods, performance is dependent on genetic differences between samples.
+
+Novel features:
+
+* Uses both cell hashing and SNP data
+* Selects SNPs based on gene expression to reduce noise and computational cost
+
+
+## Preprocessing
+
+we will begin with pre processing the data, this includes finding the most commonly expressed genes in our dataset, then subsetting the vcf file to retain only snps located in these commonly expressed genes.
+
+
+````{r}
+
+
+
+````
+
+This vcf can then be used as input to VarTrix (), along with your .bam, barcodes and reference genome.
+Vartrix.
+
+
+## Variant Calling (VartTrix)
+
+Variant calling is not done within the package. 
+Instead, we refer the reader to VartTrix, where they can use the subsetted .vcf file along with their .bam, barcodes.tsv and reference genome to call SNPs.
+
+A sample vartrix command looks like the following:
+
+````{r}
+
+
+
+````
+
+Using the SNPs data from Vartrix and the classifications from the HTO algorithm, we train a supervised learning algorithm.
+
+## Cell reassignment, visualisation and evaluation
+
+````{r}
+
+
+
+````

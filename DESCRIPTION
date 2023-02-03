@@ -2,7 +2,7 @@ Package: SNPcheck
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
+    person("Michael", "Lynch", , "michael.lynch@ul.ie", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
 Description: What the package does (one paragraph).
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
@@ -12,10 +12,21 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Imports: 
     BiocGenerics,
+    CiteFuse,
+    class,
+    EnsDb.Hsapiens.v86,
     ensembldb,
     GenomeInfoDb,
     IRanges,
     Matrix,
+    Seurat,
     SingleCellExperiment,
     SummarizedExperiment,
     VariantAnnotation
+Depends: 
+    R (>= 2.10)
+LazyData: true
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

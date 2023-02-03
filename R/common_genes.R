@@ -5,7 +5,7 @@
 #' @return names of top 100 most commonly expressed genes.
 #' @export
 #'
-#' @examples common_genes(my_sce)
+#'
 #'
 common_genes<-function(sce) {
   counts_matrix<-SingleCellExperiment::counts(sce)
