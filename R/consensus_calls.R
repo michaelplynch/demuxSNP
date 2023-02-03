@@ -1,8 +1,8 @@
 #' Run existing cell hashing algorithms
 #'
-#' @param sce
+#' @param sce SingleCellExperiment object
 #'
-#' @return
+#' @return Updated SingleCellExperiment object
 #' @export
 #'
 #' @examples

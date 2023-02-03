@@ -7,7 +7,11 @@
 add_snps(sce, mat, thresh = 0.8)
 }
 \arguments{
-\item{thresh}{}
+\item{sce}{Singnle Cell Experiment object}
+
+\item{mat}{.mxt output from VartTrix}
+
+\item{thresh}{threshold presence of cells}
 }
 \description{
 Add SNPs to sce

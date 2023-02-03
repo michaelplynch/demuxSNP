@@ -7,7 +7,10 @@
 consensus_calls(sce)
 }
 \arguments{
-\item{sce}{}
+\item{sce}{SingleCellExperiment object}
+}
+\value{
+Updated SingleCellExperiment object
 }
 \description{
 Run existing cell hashing algorithms

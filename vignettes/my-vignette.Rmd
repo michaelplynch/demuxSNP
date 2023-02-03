@@ -31,17 +31,40 @@ Novel features:
 
 ## Preprocessing
 
-we will begin with pre processing the data, this includes finding the most commonly expressed genes in our dataset, then subsetting the vcf file to retain only snps located in these commonly expressed genes.
+we will begin with pre-processing the data, this includes finding the most commonly expressed genes in our dataset, then subsetting the vcf file to retain only snps located in these commonly expressed genes.
 
-
-````{r}
-
+`````{r}
 
 
 ````
 
-This vcf can then be used as input to VarTrix (), along with your .bam, barcodes and reference genome.
-Vartrix.
+````{r}
+
+subset_vcf()
+consensus_calls()
+add_snps()
+reassign()
+
+````
+
+We also run a number of hashing based demultiplexing algorithms.
+Their consensus will be used as training labels later on.
+
+````{r}
+
+consensus_calls()
+
+````
+
+
+````{r}
+
+load("../data/cells_x_snps.rda")
+getwd()
+````
+
+This vcf can then be used as input to VarTrix (https://github.com/10XGenomics/vartrix), along with your .bam, barcodes and reference genome.
+
 
 
 ## Variant Calling (VartTrix)
