@@ -16,6 +16,9 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(SNPcheck)
+library(ComplexHeatmap)
+library(viridisLite)
+library(SingleCellExperiment)
 ```
 
 Demultiplexing in scRNAseq involves assigning cells back to their original sample, where cells from different donors, treatments types or physiological locations are sequenced together.
@@ -33,35 +36,29 @@ Novel features:
 
 we will begin with pre-processing the data, this includes finding the most commonly expressed genes in our dataset, then subsetting the vcf file to retain only snps located in these commonly expressed genes.
 
-`````{r}
-
-
-````
-
 ````{r}
 
-subset_vcf()
-consensus_calls()
-add_snps()
-reassign()
+sce<-sce
+vcf<-vcf
+snps<-cells_by_snps
 
 ````
+
+
+`````{r}
+
+top_genes<-common_genes(sce = sce)
+subset_vcf(vcf,sce,top_genes = top_genes)
+sce<-consensus_calls(sce)
+
+````
+
+
 
 We also run a number of hashing based demultiplexing algorithms.
 Their consensus will be used as training labels later on.
 
-````{r}
 
-consensus_calls()
-
-````
-
-
-````{r}
-
-load("../data/cells_x_snps.rda")
-getwd()
-````
 
 This vcf can then be used as input to VarTrix (https://github.com/10XGenomics/vartrix), along with your .bam, barcodes and reference genome.
 
@@ -86,6 +83,24 @@ Using the SNPs data from Vartrix and the classifications from the HTO algorithm,
 
 ````{r}
 
+sce<-add_snps(sce,snps)
+
+altExp(sce,"SNP")
+
+sce<-reassign(sce,k=5)
+
+table(sce$knn)
+````
+
+
+
+
+````{r fig.width=7,fig.height=6}
+colors = structure(viridis(n=3), names = c("-1","0", "1"))
+
+Heatmap(counts(altExp(sce[,sce$seurat=="Negative"],"SNP")),column_split=sce$knn[sce$seurat=="Negative"],cluster_rows=FALSE,show_column_names = FALSE,cluster_column_slices = FALSE,column_names_rot = 45,column_title_rot = -45,row_title = "SNPs",col=colors)
+
+Heatmap(counts(altExp(sce,"SNP")),column_split=sce$knn,cluster_rows=FALSE,show_column_names = FALSE,cluster_column_slices = FALSE,row_title = "SNPs",col=colors)
 
 
 ````
