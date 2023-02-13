@@ -45,7 +45,7 @@ snps<-cells_by_snps
 ````
 
 
-`````{r}
+````{r}
 
 top_genes<-common_genes(sce = sce)
 subset_vcf(vcf,sce,top_genes = top_genes)

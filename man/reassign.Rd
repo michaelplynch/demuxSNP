@@ -12,6 +12,10 @@ reassign(sce, k = 10, seed = 1, train = sce$train, predict = sce$predict)
 \item{k}{number of neighbours in knn, default to 10}
 
 \item{seed}{set seed for reproducibility, default to 1}
+
+\item{train}{logical vector specifying which cells to use to train classifier}
+
+\item{predict}{logical vector specifying which cells to classify}
 }
 \description{
 Reassign cells using knn

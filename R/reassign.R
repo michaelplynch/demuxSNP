@@ -3,6 +3,8 @@
 #' @param sce Single Cell Experiment object
 #' @param k number of neighbours in knn, default to 10
 #' @param seed set seed for reproducibility, default to 1
+#' @param train logical vector specifying which cells to use to train classifier
+#' @param predict logical vector specifying which cells to classify
 #'
 #' @return
 #' @export
