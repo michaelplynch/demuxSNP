@@ -8,15 +8,17 @@
 #' @export
 #'
 #' @examples
-reassign<-function(sce,k=10,seed=1) {
+reassign<-function(sce,k=10,seed=1,train=sce$train,predict=sce$predict) {
 
   train<-as.data.frame(t(SingleCellExperiment::counts(SingleCellExperiment::altExp(sce,"SNP"))[,sce$train==TRUE]))
-  pred<-as.data.frame(t(SingleCellExperiment::counts(SingleCellExperiment::altExp(sce,"SNP"))[,sce$train==FALSE]))
+  pred<-as.data.frame(t(SingleCellExperiment::counts(SingleCellExperiment::altExp(sce,"SNP"))[,sce$predict==TRUE]))
+
+
 
   set.seed(seed)
-  ID<-class::knn(train,pred,k=1,sce$citefuse[sce$train==TRUE])
+  ID<-class::knn(train,pred,k=10,sce$citefuse[sce$train==TRUE])
 
-  sce$knn[1:length(colnames(sce))]<-"unknown"
-  sce$knn[sce$predict==TRUE]<-ID
+  #sce$knn[1:length(colnames(sce))]<-"unknown"
+  sce$knn<-as.factor(ID)
   return(sce)
 }

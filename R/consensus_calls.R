@@ -13,6 +13,7 @@ result_sce<-CiteFuse::crossSampleDoublets(sce)
 # Seurat
 SingleCellExperiment::altExp(sce,"SNP")<-NULL
 result_seurat<-Seurat::as.Seurat(sce)
+#result_seurat$ident<-NULL
 result_seurat<-Seurat::HTODemux(result_seurat)
 
 # append results
@@ -25,6 +26,8 @@ sce$citefuse_class<-result_sce$doubletClassify_between_class
 sce$seurat_class<-result_seurat$HTO_classification.global
 
 sce$train<-sce$intersect==TRUE & sce$citefuse_class=="Singlet" & sce$seurat_class=="Singlet"
-sce$predict<-sce$intersect==FALSE & sce$citefuse_class=="Singlet" & sce$seurat_class=="Singlet"
+sce$predict<-sce$intersect==FALSE | sce$intersect==TRUE#& sce$citefuse_class=="Singlet" & sce$seurat_class=="Singlet"
+
+
 return(sce)
 }

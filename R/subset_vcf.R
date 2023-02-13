@@ -24,6 +24,7 @@ subset_vcf<-function(my_vcf,sce,top_genes) {
   GenomeInfoDb::seqlengths(top_gene_ranges)<-NA
 
   top_genes_vcf<-my_vcf_inbound[IRanges::overlapsAny(SNP_ranges_inbound, top_gene_ranges,type="within")]
-  VariantAnnotation::writeVcf(top_genes_vcf,'reduced_SNPs.vcf')
+  #VariantAnnotation::writeVcf(top_genes_vcf,'reduced_SNPs.vcf')
+  return(top_genes_vcf)
 }
 
