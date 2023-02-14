@@ -23,8 +23,8 @@ Imports:
     SummarizedExperiment,
     VariantAnnotation
 Depends: 
-    R (>= 2.10)
-LazyData: true
+    R (>= 4.2.0)
+biocViews: Classification, SingleCell
 Suggests: 
     knitr,
     rmarkdown

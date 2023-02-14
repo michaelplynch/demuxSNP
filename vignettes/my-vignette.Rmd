@@ -38,10 +38,10 @@ we will begin with pre-processing the data, this includes finding the most commo
 
 ````{r}
 
-sce<-sce
-vcf<-vcf
-snps<-cells_by_snps
-
+load("../Data/sce.rda")
+# load("././Data/cells_x_snps.rda")
+# load("././Data/vcf.rda")
+# load("././Data/cells_by_snps.rda")
 ````
 
 
