@@ -1,10 +1,10 @@
-#' Add SNPs to sce
+#' Add SNPs to SingleCellExperiment object
 #'
-#' @param sce Singnle Cell Experiment object
-#' @param mat .mxt output from VartTrix
-#' @param thresh threshold presence of cells
+#' @param sce SingleCellExperiment object
+#' @param mat .mtx output from VartTrix
+#' @param thresh threshold presence of SNP, defaults to 0.8
 #'
-#' @return
+#' @return Updated SingleCellExperiment object
 #' @export
 #'
 #' @examples

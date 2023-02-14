@@ -14,12 +14,14 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r message=FALSE}
 library(SNPcheck)
 library(ComplexHeatmap)
 library(viridisLite)
 library(SingleCellExperiment)
 ```
+
+## Intro
 
 Demultiplexing in scRNAseq involves assigning cells back to their original sample, where cells from different donors, treatments types or physiological locations are sequenced together.
 
@@ -31,10 +33,21 @@ Novel features:
 * Uses both cell hashing and SNP data
 * Selects SNPs based on gene expression to reduce noise and computational cost
 
+top_genes<-common_genes(sce)
+
+vcf<-subset_vcf(vcf,top_genes)
+
+sce<-consensus_calls(sce)
+
+sce<-add_snps(sce,snps)
+
+sce<-reassign(sce,k,seed,train,test)
+
+Can then heatmap results etc.
 
 ## Preprocessing
 
-we will begin with pre-processing the data, this includes finding the most commonly expressed genes in our dataset, then subsetting the vcf file to retain only snps located in these commonly expressed genes.
+We will begin with pre-processing the data, this includes finding the most commonly expressed genes in our dataset, then subsetting the vcf file to retain only snps located in these commonly expressed genes.
 
 ````{r}
 
@@ -48,7 +61,7 @@ load("../Data/vcf.rda")
 ````{r}
 
 top_genes<-common_genes(sce = sce)
-subset_vcf(vcf,sce,top_genes = top_genes)
+subset_vcf(vcf,top_genes = top_genes)
 sce<-consensus_calls(sce)
 
 ````
