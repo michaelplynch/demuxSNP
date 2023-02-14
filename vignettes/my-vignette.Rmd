@@ -39,9 +39,9 @@ we will begin with pre-processing the data, this includes finding the most commo
 ````{r}
 
 load("../Data/sce.rda")
-# load("././Data/cells_x_snps.rda")
-# load("././Data/vcf.rda")
-# load("././Data/cells_by_snps.rda")
+load("../Data/snps.rda")
+load("../Data/vcf.rda")
+
 ````
 
 

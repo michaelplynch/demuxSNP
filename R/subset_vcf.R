@@ -25,7 +25,7 @@ subset_vcf<-function(my_vcf,sce,top_genes) {
   logi<-SNP_ranges_inbound %within% top_gene_ranges
   top_genes_vcf<-my_vcf_inbound[SNP_ranges_inbound %within% top_gene_ranges]
   top_genes_vcf
-  VariantAnnotation::writeVcf(top_genes_vcf,'reduced_SNPs.vcf')
+  #VariantAnnotation::writeVcf(top_genes_vcf,'reduced_SNPs.vcf')
   return(top_genes_vcf)
 }
 
