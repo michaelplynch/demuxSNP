@@ -10,13 +10,49 @@
 #' @export
 #'
 #' @examples
-reassign<-function(sce,k=10,seed=1,train=sce$train,predict=sce$predict) {
+reassign<-function(sce,k=10,seed=1,train_cells=sce$train,predict_cells=sce$predict) {
 
-  train<-as.data.frame(t(SingleCellExperiment::counts(SingleCellExperiment::altExp(sce,"SNP"))[,sce$train==TRUE]))
-  pred<-as.data.frame(t(SingleCellExperiment::counts(SingleCellExperiment::altExp(sce,"SNP"))[,sce$predict==TRUE]))
+  #Singlet training data
+  train<-SingleCellExperiment::counts(SingleCellExperiment::altExp(sce,"SNP"))[,sce$train==TRUE]
+  labels<-sce$citefuse[train_cells==TRUE]
+  labels<-droplevels(labels)
+
+  colnames(train)<-labels
+
+  #Simulated doublets
+  combs<-expand.grid(levels(labels),levels(labels))
+  combs<-combs[combs$Var1!=combs$Var2,]
+  combs_joined<-paste0(combs$Var1,combs$Var2)
+
+  all<-c()
+  for (i in 1:length(combs_joined)) {
+
+    l1<-as.character(combs$Var1[i])
+    l2<-as.character(combs$Var2[i])
+
+    d1<-train[,labels==l1]
+    d2<-train[,labels==l2]
+
+    s1<-sample(1:dim(d1)[2],10,replace=TRUE)
+    s2<-sample(1:dim(d2)[2],10,replace=TRUE)
+
+    doubs<-d1[,s1]==1 | d2[,s2]==1
+    doubs<-doubs*1
+    doubs[doubs==0]<-c(-1)
+    colnames(doubs)<-rep("Doublet",length(colnames(doubs)))#rep(paste0(l1,l2),length(colnames(doubs)))
+
+    all<-cbind(all,doubs)
+  }
+
+  dim(all)
+
+  train_all<-cbind(train,all)
+
+  #prediction data
+  pred<-as.data.frame(SingleCellExperiment::counts(SingleCellExperiment::altExp(sce,"SNP"))[,sce$predict==TRUE])
 
   set.seed(seed)
-  ID<-class::knn(train,pred,k=10,sce$citefuse[sce$train==TRUE])
+  ID<-class::knn(t(train_all),t(pred),k=k,colnames(train_all))
 
   #sce$knn[1:length(colnames(sce))]<-"unknown"
   sce$knn<-as.factor(ID)

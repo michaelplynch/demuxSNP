@@ -2,17 +2,20 @@
 % Please edit documentation in R/add_snps.R
 \name{add_snps}
 \alias{add_snps}
-\title{Add SNPs to sce}
+\title{Add SNPs to SingleCellExperiment object}
 \usage{
 add_snps(sce, mat, thresh = 0.8)
 }
 \arguments{
-\item{sce}{Singnle Cell Experiment object}
+\item{sce}{SingleCellExperiment object}
 
-\item{mat}{.mxt output from VartTrix}
+\item{mat}{.mtx output from VartTrix}
 
-\item{thresh}{threshold presence of cells}
+\item{thresh}{threshold presence of SNP, defaults to 0.8}
+}
+\value{
+Updated SingleCellExperiment object
 }
 \description{
-Add SNPs to sce
+Add SNPs to SingleCellExperiment object
 }

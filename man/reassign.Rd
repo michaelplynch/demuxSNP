@@ -4,7 +4,13 @@
 \alias{reassign}
 \title{Reassign cells using knn}
 \usage{
-reassign(sce, k = 10, seed = 1, train = sce$train, predict = sce$predict)
+reassign(
+  sce,
+  k = 10,
+  seed = 1,
+  train_cells = sce$train,
+  predict_cells = sce$predict
+)
 }
 \arguments{
 \item{sce}{Single Cell Experiment object}

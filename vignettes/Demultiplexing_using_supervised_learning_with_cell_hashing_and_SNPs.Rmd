@@ -1,0 +1,175 @@
+---
+title: "Demultiplexing using supervised learning with cell hashing and SNPs"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Demultiplexing_using_supervised_learning_with_cell_hashing and_SNPs}
+  %\VignetteEngine{knitr::rmarkdown}
+  
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message=FALSE
+)
+```
+
+
+
+
+```{r }
+
+#  %\VignetteEncoding{UTF-8}
+
+library(SNPcheck)
+library(ComplexHeatmap)
+library(viridisLite)
+library(SingleCellExperiment)
+library(dittoSeq)
+library(ggpubr)
+```
+
+````{r}
+
+colors = structure(viridis(n=3), names = c("-1","0", "1"))
+
+````
+
+## Intro
+
+This package is built on the premise of using high confidence cell hashing calls to train a classifier using SNP features.
+We also provide some helper function to optimise SNP selection, create training data and merge SNP data into the SingleCellExperiment framework, while providing flexibility in selecting function parameters, training data and test data to the user.
+
+
+Demultiplexing in scRNAseq involves assigning cells back to their original sample, where cells from different donors, treatments types or physiological locations are sequenced together.
+
+Here, we aim to leverage information from both modalities to minimise misclassification and maximise yield.
+We note that as with other SNP based methods, performance is dependent on genetic differences between samples.
+
+Novel features:
+
+* Uses both cell hashing and SNP data
+* Selects SNPs based on gene expression to reduce noise and computational cost
+
+
+## Exploratory analysis
+
+````{r echo=FALSE, warning=FALSE, fig.height=4,fig.width=7.5}
+
+htos<-as.data.frame(t(logcounts(altExp(sce,"HTO"))))
+
+x1<-gghistogram(htos,x="Hashtag1",fill =dittoColors(1)[1],palette = "lancet",xlim=c(0,7),ylim=c(0,1000),alpha=1)
+x2<-gghistogram(htos,x="Hashtag2",fill =dittoColors(1)[2],palette = "lancet",xlim=c(0,7),ylim=c(0,1000),alpha=1)
+x3<-gghistogram(htos,x="Hashtag3",fill =dittoColors(1)[3],palette = "lancet",xlim=c(0,7),ylim=c(0,1000),alpha=1)
+x4<-gghistogram(htos,x="Hashtag4",fill =dittoColors(1)[4],palette = "lancet",xlim=c(0,7),ylim=c(0,1000),alpha=1)
+x5<-gghistogram(htos,x="Hashtag5",fill =dittoColors(1)[5],palette = "lancet",xlim=c(0,7),ylim=c(0,1000),alpha=1)
+x6<-gghistogram(htos,x="Hashtag6",fill =dittoColors(1)[6],palette = "lancet",xlim=c(0,7),ylim=c(0,1000),alpha=1)
+
+ggarrange(x1,x2,x3,x4,x5,x6,align="hv",ncol=3,nrow=2)
+
+````
+
+## Preprocessing
+
+We load three data objects. 
+A SingleCellExperiment object containing RNA and HTO counts, a vcf file containing SNPs and a matrix containing SNP information for each cell (we will show you how to generate this SNPs matrix using VarTrix outside of R).
+
+````{r}
+
+load("../Data/sce.rda")
+load("../Data/snps.rda")
+load("../Data/vcf.rda")
+
+````
+
+Common variants files, for example from the 1000 Genomes Project, can contain over 7 million SNPs.
+To reduce computational cost and cell-type effects, we subset our SNPs list to those located within genes expressed across most cells in our data.
+
+We first find the most commonly expressed genes in our RNA data, then subset the vcf file to SNPs seen in those genes.
+
+````{r}
+
+top_genes<-common_genes(sce = sce)
+subset_vcf(vcf,top_genes = top_genes)
+
+````
+
+Next, we wish to identify cells which we can confidently call to a particular group.
+There are a number of ways this can be achieved, including probabilistic modelling of the HTO counts, setting non-conservative thresholds or using consensus calls. 
+Here, we have used the consensus singlet calls of two algorithms, HTODemux from Seurat and crossSampleDoublets from CiteFuse to generate our training data.
+
+````{r }
+sce$ident<-NULL
+sce<-consensus_calls(sce)
+
+````
+
+## Variant Calling (VarTrix)
+
+Variant calling is not done within the package. 
+Instead, we refer the reader to VarTrix, where they can use the subsetted .vcf file along with their .bam, barcodes.tsv and reference genome to call SNPs.
+
+A sample varTrix command looks like the following:
+
+````{bash eval=FALSE}
+
+./vartrix -v <path_to_input_vcf> -b <path_to_cellranger_bam> -f <path_to_fasta_file> -c <path_to_cell_barcodes_file> -o <path_for_output_matrix>
+
+````
+
+Using the SNPs data from Vartrix and the classifications from the HTO algorithm, we train a supervised learning algorithm.
+
+## Cell reassignment, visualisation and evaluation
+
+For ease of use, we will add the SNP data to our SingleCellExperiment object as an AlternativeExpreiment.
+This function also filters out SNPs which are observed at a low frequency in the data.
+
+````{r}
+
+sce<-add_snps(sce,snps)
+
+altExp(sce,"SNP")
+
+````
+
+Before we reassign any cells, we will first visualise the results from individual algorithms.
+Below, we compare Seurat and CiteFuse classification. 
+Most of the uncertainty here lies between whether a cell is a Singlet/Doublet or Negative rather than which Hashtag.
+````{r}
+
+table(sce$seurat,sce$citefuse)
+
+````
+Splitting the SNP data by Seurat classification, we initially see a large number of 'negative' cells which appear of good quality (high proportion of reads) which may be assignable to another hashtag.
+
+Splitting the SNP data by CiteFuse classification, we see a large number of "doublet".
+
+````{r}
+
+table(sce$seurat)
+table(sce$citefuse)
+
+Heatmap(counts(altExp(sce,"SNP")),cluster_column_slices = FALSE,cluster_rows = FALSE,column_split=sce$seurat,show_row_names = FALSE,show_column_names = FALSE,col=colors)
+
+````
+
+
+````{r}
+
+sce<-reassign(sce,k=5)
+
+table(sce$knn)
+````
+
+
+
+
+````{r fig.width=7,fig.height=6}
+
+Heatmap(counts(altExp(sce[,sce$seurat=="Negative"],"SNP")),column_split=sce$knn[sce$seurat=="Negative"],cluster_rows=FALSE,show_column_names = FALSE,cluster_column_slices = FALSE,column_names_rot = 45,column_title_rot = -45,row_title = "SNPs",col=colors)
+
+Heatmap(counts(altExp(sce,"SNP")),column_split=sce$knn,cluster_rows=FALSE,show_column_names = FALSE,cluster_column_slices = FALSE,row_title = "SNPs",col=colors)
+
+
+````

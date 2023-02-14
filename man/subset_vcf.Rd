@@ -2,20 +2,18 @@
 % Please edit documentation in R/subset_vcf.R
 \name{subset_vcf}
 \alias{subset_vcf}
-\title{Subset common variants vcf file to only SNPs seen in commonly expressed genes}
+\title{Subset common variants vcf file to only SNPs seen in most commonly expressed genes}
 \usage{
-subset_vcf(my_vcf, sce, top_genes)
+subset_vcf(my_vcf, top_genes)
 }
 \arguments{
-\item{my_vcf}{path to common variants vcf file}
+\item{my_vcf}{path to SNPs vcf file}
 
-\item{sce}{single cell experiment object}
-
-\item{top_genes}{from previous function}
+\item{top_genes}{output from 'common_genes' function}
 }
 \value{
 common_snps.vcf vcf file containing subset of SNPs from common variants file seen in commonly expressed genes
 }
 \description{
-Subset common variants vcf file to only SNPs seen in commonly expressed genes
+Subset common variants vcf file to only SNPs seen in most commonly expressed genes
 }

@@ -4,7 +4,9 @@ Version: 0.0.0.9000
 Authors@R: 
     person("Michael", "Lynch", , "michael.lynch@ul.ie", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-9535-6461"))
-Description: Labels from consensus HTO calls and SNPs from commonly expressed genes are used to build a classifier to aid in demultiplexing scRNAseq data.
+Description: This package is built on the premise of using single-cell hashing and SNP data combined to identify miscalled or uncalled cells and train a classifier using SNP features. 
+  We also provide some helper function to optimise SNP selection, create training data and merge SNP data into the SingleCellExperiment framework.  
+  We aim to provide significant flexibility to the end user to test different model parameters, supply custom training and test data.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -13,15 +15,19 @@ Imports:
     BiocGenerics,
     CiteFuse,
     class,
+    ComplexHeatmap,
+    dittoSeq,
     EnsDb.Hsapiens.v86,
     ensembldb,
     GenomeInfoDb,
+    ggpubr,
     IRanges,
     Matrix,
     Seurat,
     SingleCellExperiment,
     SummarizedExperiment,
-    VariantAnnotation
+    VariantAnnotation,
+    viridisLite
 Depends: 
     R (>= 4.2.0)
 biocViews: Classification, SingleCell
