@@ -15,8 +15,6 @@ reassign<-function(sce,k=10,seed=1,train=sce$train,predict=sce$predict) {
   train<-as.data.frame(t(SingleCellExperiment::counts(SingleCellExperiment::altExp(sce,"SNP"))[,sce$train==TRUE]))
   pred<-as.data.frame(t(SingleCellExperiment::counts(SingleCellExperiment::altExp(sce,"SNP"))[,sce$predict==TRUE]))
 
-
-
   set.seed(seed)
   ID<-class::knn(train,pred,k=10,sce$citefuse[sce$train==TRUE])
 
