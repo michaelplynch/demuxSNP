@@ -26,7 +26,6 @@ Imports:
     Seurat,
     SingleCellExperiment,
     SummarizedExperiment,
-    VariantAnnotation,
     viridisLite
 Depends: 
     R (>= 4.2.0)
