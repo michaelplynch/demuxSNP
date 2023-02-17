@@ -136,6 +136,7 @@ altExp(sce,"SNP")
 Before we reassign any cells, we will first visualise the results from individual algorithms.
 Below, we compare Seurat and CiteFuse classification. 
 Most of the uncertainty here lies between whether a cell is a Singlet/Doublet or Negative rather than which Hashtag.
+
 ````{r}
 
 table(sce$seurat,sce$citefuse)
