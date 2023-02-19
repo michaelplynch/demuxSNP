@@ -7,6 +7,8 @@
 #' @export
 #'
 #'
+#' @example top_genes<-common_genes(sce)
+#' small_vcf<-subset_vcf(vcf,top_genes)
 #'
 subset_vcf<-function(my_vcf,top_genes) {
   #my_vcf<-VariantAnnotation::readVcf('full.vcf',"GRCh38")
@@ -17,12 +19,12 @@ subset_vcf<-function(my_vcf,top_genes) {
 
   gns <- ensembldb::genes(EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86)
 
-  top_gene_ranges<-gns[mcols(gns)$gene_name %in% top_genes]
+  top_gene_ranges<-gns[gns$gene_name %in% top_genes]
 
   GenomeInfoDb::seqlengths(SNP_ranges_inbound)<-NA
   GenomeInfoDb::seqlengths(top_gene_ranges)<-NA
 
-  top_genes_vcf<-my_vcf_inbound[SNP_ranges_inbound %within% top_gene_ranges]
+  top_genes_vcf<-my_vcf_inbound[IRanges::overlapsAny(SNP_ranges_inbound, top_gene_ranges,type="within")]#[SNP_ranges_inbound %within% top_gene_ranges]
 
   #VariantAnnotation::writeVcf(top_genes_vcf,'reduced_SNPs.vcf')
   return(top_genes_vcf)
