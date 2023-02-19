@@ -17,3 +17,8 @@ common_snps.vcf vcf file containing subset of SNPs from common variants file see
 \description{
 Subset common variants vcf file to only SNPs seen in most commonly expressed genes
 }
+\examples{
+top_genes<-common_genes(sce)
+small_vcf<-subset_vcf(vcf,top_genes)
+
+}

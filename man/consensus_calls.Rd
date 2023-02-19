@@ -17,4 +17,5 @@ Run existing cell hashing algorithms
 }
 \examples{
 sce<-consensus_calls(sce)
+
 }

@@ -19,4 +19,7 @@ snps
 \description{
 A sample output from VarTrix corresponding to the sce SingleCellExperiment object.
 }
+\examples{
+dim(snps)
+}
 \keyword{datasets}

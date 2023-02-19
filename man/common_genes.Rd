@@ -15,3 +15,7 @@ names of top 100 most commonly expressed genes.
 \description{
 Return a list of the top 100 most commonly expressed genes from a SingleCellExperiment object.
 }
+\examples{
+ sce<-common_genes(sce)
+
+}
