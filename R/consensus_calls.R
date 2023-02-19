@@ -6,6 +6,7 @@
 #' @export
 #'
 #' @examples sce<-consensus_calls(sce)
+#'
 consensus_calls<-function(sce) {
 # CiteFuse
 #result_sce<-CiteFuse::crossSampleDoublets(sce)
