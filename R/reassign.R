@@ -54,7 +54,7 @@ reassign<-function(sce,k=10,seed=1,train_cells=sce$train,predict_cells=sce$predi
   #prediction data
   pred<-as.data.frame(SingleCellExperiment::counts(SingleCellExperiment::altExp(sce,"SNP"))[,sce$predict==TRUE])
 
-  set.seed(seed)
+  #set.seed(seed)
   ID<-class::knn(t(train_all),t(pred),k=k,colnames(train_all))
 
   #sce$knn[1:length(colnames(sce))]<-"unknown"
