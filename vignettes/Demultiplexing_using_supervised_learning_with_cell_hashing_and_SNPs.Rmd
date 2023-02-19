@@ -138,23 +138,11 @@ Before we reassign any cells, we will first visualise the results from individua
 Below, we compare Seurat and CiteFuse classification. 
 Most of the uncertainty here lies between whether a cell is a Singlet/Doublet or Negative rather than which Hashtag.
 
-````{r}
 
-#table(sce$seurat,sce$citefuse)
-
-````
 Splitting the SNP data by Seurat classification, we initially see a large number of 'negative' cells which appear of good quality (high proportion of reads) which may be assignable to another hashtag.
 
 Splitting the SNP data by CiteFuse classification, we see a large number of "doublet".
 
-````{r eval=FALSE}
-
-table(sce$seurat)
-table(sce$citefuse)
-
-Heatmap(counts(altExp(sce,"SNP")),cluster_column_slices = FALSE,cluster_rows = FALSE,column_split=sce$seurat,show_row_names = FALSE,show_column_names = FALSE,col=colors)
-
-````
 
 
 ````{r}
