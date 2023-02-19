@@ -27,7 +27,8 @@ Imports:
     SummarizedExperiment,
     viridisLite,
     VariantAnnotation,
-    demuxmix
+    demuxmix,
+    DropletUtils
 Depends: 
     R (>= 4.2.0)
 biocViews: Classification, SingleCell
