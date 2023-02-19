@@ -7,7 +7,7 @@
 #' @export
 #'
 #'
-#' @example top_genes<-common_genes(sce)
+#' @examples top_genes<-common_genes(sce)
 #' small_vcf<-subset_vcf(vcf,top_genes)
 #'
 subset_vcf<-function(my_vcf,top_genes) {
