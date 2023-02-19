@@ -7,7 +7,7 @@
 #' @return Updated SingleCellExperiment object
 #' @export
 #'
-#' @examples
+#' @examples sce<-add_snps(sce=sce,mat=snps,thresh=0.8)
 #'
 add_snps<-function(sce,mat,thresh=0.8) {
   mat_obs<-mat[(rowSums(mat>0)/dim(mat)[2]) > thresh,]

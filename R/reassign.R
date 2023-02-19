@@ -3,18 +3,21 @@
 #' @param sce Single Cell Experiment object
 #' @param k number of neighbours in knn, default to 10
 #' @param seed set seed for reproducibility, default to 1
-#' @param train logical vector specifying which cells to use to train classifier
-#' @param predict logical vector specifying which cells to classify
+#' @param train_cells logical vector specifying which cells to use to train classifier
+#' @param predict_cells logical vector specifying which cells to classify
 #'
-#' @return
+#' @return A SingleCellExperiment with updated group assignments in "knn" metadata
 #' @export
 #'
 #' @examples
+#' sce<-consensus_calls(sce)
+#' sce<-add_snps(sce=sce,mat=snps,thresh=0.8)
+#' sce<-reassign(sce=sce,k=10)
 reassign<-function(sce,k=10,seed=1,train_cells=sce$train,predict_cells=sce$predict) {
 
   #Singlet training data
   train<-SingleCellExperiment::counts(SingleCellExperiment::altExp(sce,"SNP"))[,sce$train==TRUE]
-  labels<-sce$citefuse[train_cells==TRUE]
+  labels<-sce$labels[train_cells==TRUE]
   labels<-droplevels(labels)
 
   colnames(train)<-labels

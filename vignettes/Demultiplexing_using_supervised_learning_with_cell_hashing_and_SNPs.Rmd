@@ -52,6 +52,16 @@ Novel features:
 * Uses both cell hashing and SNP data
 * Selects SNPs based on gene expression to reduce noise and computational cost
 
+We load three data objects. 
+A SingleCellExperiment object containing RNA and HTO counts, a vcf file containing SNPs and a matrix containing SNP information for each cell (we will show you how to generate this SNPs matrix using VarTrix outside of R).
+
+````{r}
+
+load("../Data/sce.rda")
+load("../Data/snps.rda")
+load("../Data/vcf.rda")
+
+````
 
 ## Exploratory analysis
 
@@ -72,16 +82,7 @@ ggarrange(x1,x2,x3,x4,x5,x6,align="hv",ncol=3,nrow=2)
 
 ## Preprocessing
 
-We load three data objects. 
-A SingleCellExperiment object containing RNA and HTO counts, a vcf file containing SNPs and a matrix containing SNP information for each cell (we will show you how to generate this SNPs matrix using VarTrix outside of R).
 
-````{r}
-
-load("../Data/sce.rda")
-load("../Data/snps.rda")
-load("../Data/vcf.rda")
-
-````
 
 Common variants files, for example from the 1000 Genomes Project, can contain over 7 million SNPs.
 To reduce computational cost and cell-type effects, we subset our SNPs list to those located within genes expressed across most cells in our data.
@@ -139,14 +140,14 @@ Most of the uncertainty here lies between whether a cell is a Singlet/Doublet or
 
 ````{r}
 
-table(sce$seurat,sce$citefuse)
+#table(sce$seurat,sce$citefuse)
 
 ````
 Splitting the SNP data by Seurat classification, we initially see a large number of 'negative' cells which appear of good quality (high proportion of reads) which may be assignable to another hashtag.
 
 Splitting the SNP data by CiteFuse classification, we see a large number of "doublet".
 
-````{r}
+````{r eval=FALSE}
 
 table(sce$seurat)
 table(sce$citefuse)
@@ -166,7 +167,7 @@ table(sce$knn)
 
 
 
-````{r fig.width=7,fig.height=6}
+````{r eval=FALSE}
 
 Heatmap(counts(altExp(sce[,sce$seurat=="Negative"],"SNP")),column_split=sce$knn[sce$seurat=="Negative"],cluster_rows=FALSE,show_column_names = FALSE,cluster_column_slices = FALSE,column_names_rot = 45,column_title_rot = -45,row_title = "SNPs",col=colors)
 

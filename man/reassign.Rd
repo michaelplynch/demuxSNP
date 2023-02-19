@@ -19,10 +19,18 @@ reassign(
 
 \item{seed}{set seed for reproducibility, default to 1}
 
-\item{train}{logical vector specifying which cells to use to train classifier}
+\item{train_cells}{logical vector specifying which cells to use to train classifier}
 
-\item{predict}{logical vector specifying which cells to classify}
+\item{predict_cells}{logical vector specifying which cells to classify}
+}
+\value{
+A SingleCellExperiment with updated group assignments in "knn" metadata
 }
 \description{
 Reassign cells using knn
+}
+\examples{
+sce<-consensus_calls(sce)
+sce<-add_snps(sce=sce,mat=snps,thresh=0.8)
+sce<-reassign(sce=sce,k=10)
 }
