@@ -28,6 +28,8 @@ library(viridisLite)
 library(SingleCellExperiment)
 library(dittoSeq)
 library(ggpubr)
+library(Seurat)
+library(DropletUtils)
 ```
 
 ````{r}
@@ -83,9 +85,23 @@ ggarrange(x1,x2,x3,x4,x5,x6,align="hv",ncol=3,nrow=2)
 
 ````
 
+````{r}
+
+seurat<-as.Seurat(sce)
+seurat<-HTODemux(seurat)
+seurat$hash.ID<-factor(as.character(seurat$hash.ID))
+sce$seurat<-seurat$hash.ID
+
+library(DropletUtils)
+res<-hashedDrops(counts(altExp(sce,"HTO")))
+
+table(seurat$hash.ID,res$Best)
+
+
+````
+
+
 ## Preprocessing
-
-
 
 Common variants files, for example from the 1000 Genomes Project, can contain over 7 million SNPs.
 To reduce computational cost and cell-type effects, we subset our SNPs list to those located within genes expressed across most cells in our data.
@@ -104,7 +120,7 @@ There are a number of ways this can be achieved, including probabilistic modelli
 Here, we have used the consensus singlet calls of two algorithms, HTODemux from Seurat and crossSampleDoublets from CiteFuse to generate our training data.
 
 ````{r }
-sce$ident<-NULL
+
 sce<-consensus_calls(sce)
 
 ````
@@ -131,7 +147,7 @@ This function also filters out SNPs which are observed at a low frequency in the
 
 ````{r}
 
-sce<-add_snps(sce,snps)
+sce<-add_snps(sce,snps,thresh=0.95)
 
 altExp(sce,"SNP")
 
@@ -146,7 +162,14 @@ Splitting the SNP data by Seurat classification, we initially see a large number
 
 Splitting the SNP data by CiteFuse classification, we see a large number of "doublet".
 
+````{r}
 
+test<-Heatmap(counts(altExp(sce,"SNP")),column_split=sce$seurat,cluster_rows=FALSE,show_column_names = FALSE,cluster_column_slices = FALSE,column_names_rot = 45,column_title_rot = -45,row_title = "SNPs",col=colors)
+
+draw(test)
+
+
+````
 
 ````{r}
 
@@ -158,11 +181,20 @@ table(sce$knn)
 
 
 
-````{r eval=FALSE}
+````{r}
 
-Heatmap(counts(altExp(sce[,sce$seurat=="Negative"],"SNP")),column_split=sce$knn[sce$seurat=="Negative"],cluster_rows=FALSE,show_column_names = FALSE,cluster_column_slices = FALSE,column_names_rot = 45,column_title_rot = -45,row_title = "SNPs",col=colors)
+test<-Heatmap(counts(altExp(sce,"SNP")),column_split=sce$knn,cluster_rows=FALSE,show_column_names = FALSE,cluster_column_slices = FALSE,column_names_rot = 45,column_title_rot = -45,row_title = "SNPs",col=colors)
 
-Heatmap(counts(altExp(sce,"SNP")),column_split=sce$knn,cluster_rows=FALSE,show_column_names = FALSE,cluster_column_slices = FALSE,row_title = "SNPs",col=colors)
+draw(test)
 
+
+````
+
+
+
+
+````{r}
+
+sessionInfo()
 
 ````

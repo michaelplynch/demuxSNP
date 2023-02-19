@@ -7,7 +7,7 @@ Authors@R:
 Description: This package is built on the premise of using single-cell hashing and SNP data combined to identify miscalled or uncalled cells and train a classifier using SNP features. 
   We also provide some helper function to optimise SNP selection, create training data and merge SNP data into the SingleCellExperiment framework.  
   We aim to provide significant flexibility to the end user to test different model parameters, supply custom training and test data.
-License: GPL (>= 3)
+License: GPL-3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
