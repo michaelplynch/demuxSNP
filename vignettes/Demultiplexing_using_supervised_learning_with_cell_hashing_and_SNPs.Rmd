@@ -57,10 +57,13 @@ A SingleCellExperiment object containing RNA and HTO counts, a vcf file containi
 
 ````{r}
 
-load("../Data/sce.rda")
-load("../Data/snps.rda")
-load("../Data/vcf.rda")
+# load("../Data/sce.rda")
+# load("../Data/snps.rda")
+# load("../Data/vcf.rda")
 
+sce<-sce
+vcf<-vcf
+snps<-snps
 ````
 
 ## Exploratory analysis
