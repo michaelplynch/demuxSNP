@@ -1,5 +1,5 @@
 ---
-title: "Demultiplexing using supervised learning with cell hashing and SNPs"
+title: "Demultiplexing_using_supervised_learning_with_cell_hashing_and_SNPs"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Demultiplexing_using_supervised_learning_with_cell_hashing and_SNPs}
