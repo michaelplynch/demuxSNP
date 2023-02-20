@@ -1,6 +1,6 @@
 Package: SNPcheck
-Title: What the Package Does (One Line, Title Case)
-Version: 1.1.0
+Title: Visualising and reassigning cell hashing demultiplexing using SNPs.
+Version: 1.2.0
 Authors@R: 
     person("Michael", "Lynch", , "michael.lynch@ul.ie", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-9535-6461"))
