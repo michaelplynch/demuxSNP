@@ -7,12 +7,10 @@ To install:
 
 ```
 devtools::install_github("michaelplynch/SNPcheck", build_vignettes = TRUE)
-
 ```
 
 And vignette at:
 
 ```
 browseVignettes(package="SNPcheck")
-
 ```
