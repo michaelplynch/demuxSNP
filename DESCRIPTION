@@ -32,7 +32,10 @@ Suggests:
     viridisLite,
     ggpubr,
     dittoSeq,
-    EnsDb.Hsapiens.v86
+    EnsDb.Hsapiens.v86,
+    BiocStyle,
+    RefManageR,
+    sessioninfo,
+    testthat
 biocViews: Classification, SingleCell
 VignetteBuilder: knitr
-LazyData: true

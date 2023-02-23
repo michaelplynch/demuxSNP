@@ -1,9 +1,15 @@
 ---
 title: "Demultiplexing_using_supervised_learning_with_cell_hashing_and_SNPs"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Demultiplexing_using_supervised_learning_with_cell_hashing and_SNPs}
+author:
+  - name: Michael Lynch, University of Limerick
+output:
+  BiocStyle::html_document:
+    toc_float: true
+bibliography: references.bib
+vignette: |
+  %\VignetteIndexEntry{dim reduction with corral}
   %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
   
 ---
 
@@ -35,13 +41,17 @@ library(dittoSeq)
 colors <- structure(viridis(n = 3), names = c("-1", "0", "1"))
 ````
 
-## Intro
+# Introduction
+
+## Existing methods
 
 This package is built on the premise of using SNP from commonly expressed genes to identify and reclassify uncalled or miscalled cells when demultiplexing scRNAseq data.
 We also provide some helper function to optimise SNP selection, create training data for the classifier and merge SNP data into the SingleCellExperiment framework, while providing flexibility in selecting function parameters, training data and test data to the user.
-
+@boggy_bff_2022
 
 Demultiplexing in scRNAseq involves assigning cells back to their original sample, where cells from different donors, treatment types or physiological locations are sequenced together.
+
+## Motivation
 
 Here, we aim to leverage information from both modalities to optimise classification and minimise waste.
 We note that as with other SNP based methods, performance is dependent on genetic differences between samples as well as sufficient sequencing depth.
@@ -58,10 +68,21 @@ We load three data objects.
 A SingleCellExperiment object containing RNA and HTO counts, a vcf file containing SNPs and a matrix containing SNP information for each cell (we will show you how to generate this SNPs matrix using VarTrix outside of R).
 
 ````{r}
-data(sce,vcf,snps,ensdb,package="SNPcheck")
+data(sce,vcf,snps,package="SNPcheck")
 ````
 
-## Exploratory analysis
+## Installation
+
+````{r eval=FALSE}
+
+devtools::install_github("michaelplynch/SNPcheck", build_vignettes = TRUE)
+
+browseVignettes(package="SNPcheck")
+
+````
+
+
+# Exploratory analysis
 
 The HTO or LMO distribution is usually bimodal, with a signal (high counts) and background distribution (low counts) caused by non-specific binding.
 Ideally, these distributions would be clearly separated with no overlap, but in practice, this is not always the  case.
@@ -103,7 +124,7 @@ dittoPlot(seurat, "libsize", group.by = "hash.ID")
 
 For the remainder of this vignette we'll outline our method of checking whether or not cells have been called correctly and how to assign them to their appropriate group!
 
-## Preprocessing
+# Preprocessing
 
 Common variants files, for example from the 1000 Genomes Project, can contain over 7 million SNPs.
 To reduce computational cost and cell-type effects, we subset our SNPs list to those located within genes expressed across most cells in our data.
@@ -125,7 +146,7 @@ Here we have used demuxmix, a probabilistic model which we have set with a high 
 sce <- consensus_calls(sce)
 ````
 
-## Variant Calling (VarTrix)
+# Variant Calling (VarTrix)
 
 Variant calling is not done within the package. 
 Instead, we refer the reader to VarTrix, where they can use the subsetted .vcf file along with their .bam, barcodes.tsv and reference genome to call SNPs.
@@ -140,16 +161,18 @@ A sample VarTrix command looks like the following:
 
 Using the output matrix from Vartrix and the classifications from the HTO algorithm, we train a knn supervised learning algorithm.
 
-## Cell reassignment, visualisation and evaluation
+# Cell reassignment, visualisation and evaluation
 
 To keep things tidy, we will add the SNP data to our SingleCellExperiment object as an AlternativeExpreiment.
 This function also filters out SNPs which are observed at a low frequency in the data.
 
 
 ````{r}
+
 sce <- add_snps(sce, snps, thresh = 0.95)
 
 altExp(sce, "SNP")
+
 ````
 
 Before we reassign any cells, we will first visualise the results from individual algorithms.
@@ -183,8 +206,6 @@ table(sce$knn)
 ````
 
 
-
-
 ````{r}
 test <- Heatmap(counts(altExp(sce, "SNP")),
                 column_split = sce$knn, 
@@ -215,6 +236,10 @@ test <- Heatmap(counts(altExp(sce, "SNP"))[, sce$knn == "Hashtag5"],
 draw(test)
 ````
 
+# Session Info
+
 ````{r}
 sessionInfo()
 ````
+
+# References
