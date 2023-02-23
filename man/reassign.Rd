@@ -4,20 +4,12 @@
 \alias{reassign}
 \title{Reassign cells using knn}
 \usage{
-reassign(
-  sce,
-  k = 10,
-  seed = 1,
-  train_cells = sce$train,
-  predict_cells = sce$predict
-)
+reassign(sce, k = 10, train_cells = sce$train, predict_cells = sce$predict)
 }
 \arguments{
 \item{sce}{Single Cell Experiment object}
 
 \item{k}{number of neighbours in knn, default to 10}
-
-\item{seed}{set seed for reproducibility, default to 1}
 
 \item{train_cells}{logical vector specifying which cells to use to train classifier}
 
@@ -30,7 +22,8 @@ A SingleCellExperiment with updated group assignments in "knn" metadata
 Reassign cells using knn
 }
 \examples{
-sce<-consensus_calls(sce)
-sce<-add_snps(sce=sce,mat=snps,thresh=0.8)
-sce<-reassign(sce=sce,k=10)
+sce <- consensus_calls(sce)
+sce <- add_snps(sce = sce, mat = snps, thresh = 0.8)
+sce <- reassign(sce = sce, k = 10)
+
 }

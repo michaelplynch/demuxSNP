@@ -20,6 +20,6 @@ sce
 Example SingleCellExperiment object used throughout and built upon in SNPcheck workflow.
 }
 \examples{
-sce<-sce
+sce <- sce
 }
 \keyword{datasets}

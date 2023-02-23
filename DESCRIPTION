@@ -1,5 +1,5 @@
 Package: SNPcheck
-Title: Visualising and reassigning cell hashing demultiplexing using SNPs.
+Title: Visualising and reassigning cell hashing demultiplexing using SNPs
 Version: 1.2.0
 Authors@R: 
     person("Michael", "Lynch", , "michael.lynch@ul.ie", role = c("aut", "cre"),
@@ -11,29 +11,28 @@ License: GPL-3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
+Depends: 
+    R (>= 4.2.0),
+    SingleCellExperiment,
+    VariantAnnotation,
+    ensembldb
 Imports: 
     BiocGenerics,
     class,
-    ComplexHeatmap,
-    dittoSeq,
-    EnsDb.Hsapiens.v86,
-    ensembldb,
     GenomeInfoDb,
-    ggpubr,
     IRanges,
     Matrix,
-    Seurat,
-    SingleCellExperiment,
     SummarizedExperiment,
-    viridisLite,
-    VariantAnnotation,
     demuxmix,
-    DropletUtils
-Depends: 
-    R (>= 4.2.0)
-biocViews: Classification, SingleCell
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    Seurat,
+    ComplexHeatmap,
+    viridisLite,
+    ggpubr,
+    dittoSeq,
+    EnsDb.Hsapiens.v86
+biocViews: Classification, SingleCell
 VignetteBuilder: knitr
 LazyData: true

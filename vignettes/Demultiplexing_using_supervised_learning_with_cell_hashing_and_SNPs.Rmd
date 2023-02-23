@@ -9,10 +9,10 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  message=FALSE,
-  fig.width=7.5
+    collapse = TRUE,
+    comment = "#>",
+    message = FALSE,
+    fig.width = 7.5
 )
 ```
 
@@ -20,23 +20,19 @@ knitr::opts_chunk$set(
 
 
 ```{r }
-
 #  %\VignetteEncoding{UTF-8}
 
 library(SNPcheck)
 library(ComplexHeatmap)
 library(viridisLite)
-library(SingleCellExperiment)
-library(dittoSeq)
-library(ggpubr)
 library(Seurat)
-library(DropletUtils)
+library(ggpubr)
+library(dittoSeq)
+
 ```
 
 ````{r}
-
-colors = structure(viridis(n=3), names = c("-1","0", "1"))
-
+colors <- structure(viridis(n = 3), names = c("-1", "0", "1"))
 ````
 
 ## Intro
@@ -62,11 +58,7 @@ We load three data objects.
 A SingleCellExperiment object containing RNA and HTO counts, a vcf file containing SNPs and a matrix containing SNP information for each cell (we will show you how to generate this SNPs matrix using VarTrix outside of R).
 
 ````{r}
-
-sce<-sce
-vcf<-vcf
-snps<-snps
-
+data(sce,vcf,snps,ensdb,package="SNPcheck")
 ````
 
 ## Exploratory analysis
@@ -76,30 +68,27 @@ Ideally, these distributions would be clearly separated with no overlap, but in 
 in our example data, we see that the distributions all overlap to different extents for each Hashtag.
 
 ````{r echo=FALSE, warning=FALSE, fig.height=4,fig.width=7.5}
+htos <- as.data.frame(t(as.matrix(log(counts(altExp(sce, "HTO"))))))
 
-htos<-as.data.frame(t(logcounts(altExp(sce,"HTO"))))
+x1 <- gghistogram(htos, x = "Hashtag1", fill = dittoColors(1)[1], palette = "lancet", xlim = c(0, 7), ylim = c(0, 1000), alpha = 1)
+x2 <- gghistogram(htos, x = "Hashtag2", fill = dittoColors(1)[2], palette = "lancet", xlim = c(0, 7), ylim = c(0, 1000), alpha = 1)
+x3 <- gghistogram(htos, x = "Hashtag3", fill = dittoColors(1)[3], palette = "lancet", xlim = c(0, 7), ylim = c(0, 1000), alpha = 1)
+x4 <- gghistogram(htos, x = "Hashtag4", fill = dittoColors(1)[4], palette = "lancet", xlim = c(0, 7), ylim = c(0, 1000), alpha = 1)
+x5 <- gghistogram(htos, x = "Hashtag5", fill = dittoColors(1)[5], palette = "lancet", xlim = c(0, 7), ylim = c(0, 1000), alpha = 1)
+x6 <- gghistogram(htos, x = "Hashtag6", fill = dittoColors(1)[6], palette = "lancet", xlim = c(0, 7), ylim = c(0, 1000), alpha = 1)
 
-x1<-gghistogram(htos,x="Hashtag1",fill =dittoColors(1)[1],palette = "lancet",xlim=c(0,7),ylim=c(0,1000),alpha=1)
-x2<-gghistogram(htos,x="Hashtag2",fill =dittoColors(1)[2],palette = "lancet",xlim=c(0,7),ylim=c(0,1000),alpha=1)
-x3<-gghistogram(htos,x="Hashtag3",fill =dittoColors(1)[3],palette = "lancet",xlim=c(0,7),ylim=c(0,1000),alpha=1)
-x4<-gghistogram(htos,x="Hashtag4",fill =dittoColors(1)[4],palette = "lancet",xlim=c(0,7),ylim=c(0,1000),alpha=1)
-x5<-gghistogram(htos,x="Hashtag5",fill =dittoColors(1)[5],palette = "lancet",xlim=c(0,7),ylim=c(0,1000),alpha=1)
-x6<-gghistogram(htos,x="Hashtag6",fill =dittoColors(1)[6],palette = "lancet",xlim=c(0,7),ylim=c(0,1000),alpha=1)
-
-ggarrange(x1,x2,x3,x4,x5,x6,align="hv",ncol=3,nrow=2)
-
+ggarrange(x1, x2, x3, x4, x5, x6, align = "hv", ncol = 3, nrow = 2)
 ````
 
 As an example, we will run HTODemux on the data.
 
 ````{r}
+seurat <- as.Seurat(sce,data=NULL)
+seurat <- HTODemux(seurat)
+seurat$hash.ID <- factor(as.character(seurat$hash.ID))
+sce$seurat <- seurat$hash.ID
 
-seurat<-as.Seurat(sce)
-seurat<-HTODemux(seurat)
-seurat$hash.ID<-factor(as.character(seurat$hash.ID))
-sce$seurat<-seurat$hash.ID
-
-sce$seurat<-seurat$hash.ID
+sce$seurat <- seurat$hash.ID
 ````
 
 Here, we see an unusually large number of cells being called as "Negative".
@@ -108,9 +97,8 @@ Additionally, the library size of the "Negative" group looks similar to that of 
 
 
 ````{r}
-seurat$libsize<-colSums(seurat[["RNA"]]@counts)
-dittoPlot(seurat,"libsize",group.by = "hash.ID")
-
+seurat$libsize <- colSums(GetAssayData(seurat,slot="counts",assay="RNA"))
+dittoPlot(seurat, "libsize", group.by = "hash.ID")
 ````
 
 For the remainder of this vignette we'll outline our method of checking whether or not cells have been called correctly and how to assign them to their appropriate group!
@@ -123,10 +111,10 @@ To reduce computational cost and cell-type effects, we subset our SNPs list to t
 We first find the most commonly expressed genes in our RNA data, then subset the vcf file to SNPs seen in those genes.
 
 ````{r}
+top_genes <- common_genes(sce = sce)
 
-top_genes<-common_genes(sce = sce)
-subset_vcf(vcf,top_genes = top_genes)
-
+ensdb<-EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86
+subset_vcf(vcf, top_genes = top_genes,ensdb)
 ````
 
 Next, we wish to identify cells which we can confidently call to a particular group.
@@ -134,9 +122,7 @@ There are a number of ways this can be achieved, including probabilistic modelli
 Here we have used demuxmix, a probabilistic model which we have set with a high acceptance threshold to generate training data (cells which we can confidently call as a particular singlet group).
 
 ````{r }
-
-sce<-consensus_calls(sce)
-
+sce <- consensus_calls(sce)
 ````
 
 ## Variant Calling (VarTrix)
@@ -161,11 +147,9 @@ This function also filters out SNPs which are observed at a low frequency in the
 
 
 ````{r}
+sce <- add_snps(sce, snps, thresh = 0.95)
 
-sce<-add_snps(sce,snps,thresh=0.95)
-
-altExp(sce,"SNP")
-
+altExp(sce, "SNP")
 ````
 
 Before we reassign any cells, we will first visualise the results from individual algorithms.
@@ -177,23 +161,23 @@ This is consistent with the library size plot we visualised earlier.
 
 
 ````{r}
-
-test<-Heatmap(counts(altExp(sce,"SNP")),column_split=sce$seurat,cluster_rows=FALSE,show_column_names = FALSE,cluster_column_slices = FALSE,column_title_rot = -45,row_title = "SNPs",col=colors)
+test <- Heatmap(counts(altExp(sce, "SNP")), 
+                column_split = sce$seurat, 
+                cluster_rows = FALSE, 
+                show_column_names = FALSE, 
+                cluster_column_slices = FALSE, 
+                column_title_rot = -45, 
+                row_title = "SNPs", 
+                col = colors)
 
 draw(test)
-
-
 ````
 
 ````{r}
-
-
-
 ````
 
 ````{r}
-
-sce<-reassign(sce,k=5)
+sce <- reassign(sce, k = 5)
 
 table(sce$knn)
 ````
@@ -202,26 +186,35 @@ table(sce$knn)
 
 
 ````{r}
-
-test<-Heatmap(counts(altExp(sce,"SNP")),column_split=sce$knn,cluster_rows=FALSE,show_column_names = FALSE,cluster_column_slices = FALSE,column_names_rot = 45,column_title_rot = -45,row_title = "SNPs",col=colors)
+test <- Heatmap(counts(altExp(sce, "SNP")),
+                column_split = sce$knn, 
+                cluster_rows = FALSE, 
+                show_column_names = FALSE, 
+                cluster_column_slices = FALSE, 
+                column_names_rot = 45, 
+                column_title_rot = -45, 
+                row_title = "SNPs", 
+                col = colors)
 
 draw(test)
-
-
 ````
 
 Focusing in on the new Hashtag5 group, we see that a lot of the Negative cells have now been reclassed to this group, as well as a small number of cells from other groups.
 
-`````{r}
-
-test<-Heatmap(counts(altExp(sce,"SNP"))[,sce$knn=="Hashtag5"],column_split=sce$seurat[sce$knn=="Hashtag5"],cluster_rows=FALSE,show_column_names = FALSE,cluster_column_slices = FALSE,column_names_rot = 45,column_title_rot = -45,row_title = "SNPs",col=colors)
+````{r}
+test <- Heatmap(counts(altExp(sce, "SNP"))[, sce$knn == "Hashtag5"], 
+                column_split = sce$seurat[sce$knn == "Hashtag5"], 
+                cluster_rows = FALSE, 
+                show_column_names = FALSE, 
+                cluster_column_slices = FALSE, 
+                column_names_rot = 45, 
+                column_title_rot = -45, 
+                row_title = "SNPs", 
+                col = colors)
 
 draw(test)
-
 ````
 
 ````{r}
-
 sessionInfo()
-
 ````

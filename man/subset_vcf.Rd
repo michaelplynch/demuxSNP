@@ -4,12 +4,14 @@
 \alias{subset_vcf}
 \title{Subset common variants vcf file to only SNPs seen in most commonly expressed genes}
 \usage{
-subset_vcf(my_vcf, top_genes)
+subset_vcf(my_vcf, top_genes, ensdb)
 }
 \arguments{
 \item{my_vcf}{path to SNPs vcf file}
 
 \item{top_genes}{output from 'common_genes' function}
+
+\item{ensdb}{object of class ensdb corresponding to organism, genome of data}
 }
 \value{
 common_snps.vcf vcf file containing subset of SNPs from common variants file seen in commonly expressed genes
@@ -18,7 +20,8 @@ common_snps.vcf vcf file containing subset of SNPs from common variants file see
 Subset common variants vcf file to only SNPs seen in most commonly expressed genes
 }
 \examples{
-top_genes<-common_genes(sce)
-small_vcf<-subset_vcf(vcf,top_genes)
+top_genes <- common_genes(sce)
+ensdb<-EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86
+small_vcf <- subset_vcf(vcf, top_genes,ensdb)
 
 }

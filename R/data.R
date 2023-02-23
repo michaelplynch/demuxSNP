@@ -5,7 +5,7 @@
 #' @format ## `sce`
 #' A data frame with 7,240 rows and 60 columns:
 #' @source n/a for now
-#' @examples sce<-sce
+#' @examples sce <- sce
 "sce"
 #'
 #' Sample VarTrix output
