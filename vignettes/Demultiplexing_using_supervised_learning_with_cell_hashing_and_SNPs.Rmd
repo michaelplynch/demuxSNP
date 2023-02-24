@@ -26,7 +26,6 @@ knitr::opts_chunk$set(
 
 
 ```{r }
-#  %\VignetteEncoding{UTF-8}
 
 library(SNPcheck)
 library(ComplexHeatmap)
@@ -34,7 +33,8 @@ library(viridisLite)
 library(Seurat)
 library(ggpubr)
 library(dittoSeq)
-
+library(utils)
+library(sessioninfo)
 ```
 
 ````{r}

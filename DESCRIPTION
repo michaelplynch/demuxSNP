@@ -34,8 +34,7 @@ Suggests:
     dittoSeq,
     EnsDb.Hsapiens.v86,
     BiocStyle,
-    RefManageR,
-    sessioninfo,
-    testthat
+    RefManageR
 biocViews: Classification, SingleCell
 VignetteBuilder: knitr
+LazyData: true
