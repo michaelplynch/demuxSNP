@@ -8,7 +8,7 @@
 #'
 #' @import ensembldb
 #' @import VariantAnnotation
-#' @importFrom("methods", "is")
+#' @importFrom methods is
 #'
 #' @examples top_genes <- common_genes(sce)
 #' ensdb<-EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86

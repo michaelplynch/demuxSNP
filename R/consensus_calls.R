@@ -5,7 +5,7 @@
 #' @return Updated SingleCellExperiment object
 #' @export
 #'
-#' @importFrom("methods", "is")
+#' @importFrom methods is
 #'
 #' @examples sce <- consensus_calls(sce)
 #'

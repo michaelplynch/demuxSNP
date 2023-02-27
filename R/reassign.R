@@ -8,7 +8,7 @@
 #' @return A SingleCellExperiment with updated group assignments in "knn" metadata
 #' @export
 #'
-#' @importFrom("methods", "is")
+#' @importFrom methods is
 #'
 #' @examples
 #' sce <- consensus_calls(sce)

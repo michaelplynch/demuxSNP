@@ -7,7 +7,7 @@
 #'
 #' @importFrom SingleCellExperiment counts
 #' @importFrom Matrix rowSums
-#' @importFrom("methods", "is")
+#' @importFrom methods is
 #'
 #' @examples
 #' sce <- common_genes(sce)
