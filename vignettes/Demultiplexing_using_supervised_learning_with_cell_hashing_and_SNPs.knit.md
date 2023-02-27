@@ -14,19 +14,13 @@ vignette: |
   
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-    collapse = TRUE,
-    comment = "#>",
-    message = FALSE,
-    fig.width = 7.5
-)
-```
 
 
 
 
-```{r }
+
+
+```r
 
 library(SNPcheck)
 library(ComplexHeatmap)
@@ -35,12 +29,12 @@ library(Seurat)
 library(ggpubr)
 library(dittoSeq)
 library(utils)
-
 ```
 
-````{r}
+
+```r
 colors <- structure(viridis(n = 3), names = c("-1", "0", "1"))
-````
+```
 
 # Introduction
 
@@ -100,17 +94,19 @@ This reduces artifacts caused by cell-type and speeds things up.
 
 ## Installation
 
-````{r eval=FALSE}
+
+```r
 
 devtools::install_github("michaelplynch/SNPcheck", build_vignettes = TRUE)
 
 browseVignettes(package="SNPcheck")
 
-````
+```
 
 ## Quick Usage
 
-````{r eval=FALSE}
+
+```r
 # subset common variants file:
 top_genes<-common_genes(sce)
 small_vcf<-subset_vcf(sce,vcf)
@@ -122,56 +118,55 @@ sce<-consensus_calls(sce)
 sce<-add_snps(sce,mat)
 sce<-reassign(sce)
 
-````
+```
 
 # Exploratory analysis
 
 We load three data objects. 
 A SingleCellExperiment object containing RNA and HTO counts, a vcf file containing SNPs and a matrix containing SNP information for each cell (we will show you how to generate this SNPs matrix using VarTrix outside of R).
 
-````{r}
+
+```r
 data(sce,vcf,snps,package="SNPcheck")
-````
+```
 
 The HTO or LMO distribution is usually bimodal, with a signal (high counts) and background distribution (low counts) caused by non-specific binding.
 Ideally, these distributions would be clearly separated with no overlap, but in practice, this is not always the  case.
 in our example data, we see that the signal and noise overlap to varying extents in each Hashtag.
 
-````{r echo=FALSE, warning=FALSE, fig.height=4,fig.width=7.5}
-htos <- as.data.frame(t(as.matrix(log(counts(altExp(sce, "HTO"))))))
-
-x1 <- gghistogram(htos, x = "Hashtag1", fill = dittoColors(1)[1], palette = "lancet", xlim = c(0, 7), ylim = c(0, 1000), alpha = 1)
-x2 <- gghistogram(htos, x = "Hashtag2", fill = dittoColors(1)[2], palette = "lancet", xlim = c(0, 7), ylim = c(0, 1000), alpha = 1)
-x3 <- gghistogram(htos, x = "Hashtag3", fill = dittoColors(1)[3], palette = "lancet", xlim = c(0, 7), ylim = c(0, 1000), alpha = 1)
-x4 <- gghistogram(htos, x = "Hashtag4", fill = dittoColors(1)[4], palette = "lancet", xlim = c(0, 7), ylim = c(0, 1000), alpha = 1)
-x5 <- gghistogram(htos, x = "Hashtag5", fill = dittoColors(1)[5], palette = "lancet", xlim = c(0, 7), ylim = c(0, 1000), alpha = 1)
-x6 <- gghistogram(htos, x = "Hashtag6", fill = dittoColors(1)[6], palette = "lancet", xlim = c(0, 7), ylim = c(0, 1000), alpha = 1)
-
-ggarrange(x1, x2, x3, x4, x5, x6, align = "hv", ncol = 3, nrow = 2)
-````
+<img src="C:/Users/michael.lynch/AppData/Local/Temp/RtmpMFq7J3/preview-46a04eb720d8.dir/Demultiplexing_using_supervised_learning_with_cell_hashing_and_SNPs_files/figure-html/unnamed-chunk-7-1.png" width="100%" />
 
 As an example, we will run HTODemux on the data.
 
-````{r}
+
+```r
 seurat <- as.Seurat(sce,data=NULL)
 seurat <- HTODemux(seurat)
+#> Warning in PseudobulkExpression(object = object, pb.method = "average", :
+#> Exponentiation yielded infinite values. `data` may not be log-normed.
 seurat$hash.ID <- factor(as.character(seurat$hash.ID))
 sce$seurat <- seurat$hash.ID
 
 sce$seurat <- seurat$hash.ID
 
 table(sce$seurat)
-````
+#> 
+#>  Doublet Hashtag1 Hashtag2 Hashtag3 Hashtag4 Hashtag5 Hashtag6 Negative 
+#>      328       15       23      298      189       12      500      635
+```
 
 Here, we see an unusually large number of cells being called as "Negative".
 
 Additionally, the library size of the "Negative" group looks similar to that of other groups.
 
 
-````{r}
+
+```r
 seurat$libsize <- colSums(GetAssayData(seurat,slot="counts",assay="RNA"))
 dittoPlot(seurat, "libsize", group.by = "hash.ID")
-````
+```
+
+<img src="C:/Users/michael.lynch/AppData/Local/Temp/RtmpMFq7J3/preview-46a04eb720d8.dir/Demultiplexing_using_supervised_learning_with_cell_hashing_and_SNPs_files/figure-html/unnamed-chunk-9-1.png" width="100%" />
 
 For the remainder of this vignette we'll outline our method of checking whether or not cells have been called correctly and how to assign them to their appropriate group!
 
@@ -182,115 +177,23 @@ To reduce computational cost and cell-type effects, we subset our SNPs list to t
 
 We first find the most commonly expressed genes in our RNA data, then subset the vcf file to SNPs seen in those genes.
 
-````{r}
-top_genes <- common_genes(sce = sce)
-
-ensdb<-EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86
-subset_vcf(vcf, top_genes = top_genes,ensdb)
-````
-
-Next, we wish to identify cells which we can confidently call to a particular group.
-There are a number of ways this can be achieved, including probabilistic modelling of the HTO counts, manually setting non-conservative thresholds or using consensus calls. 
-Here we have used demuxmix, a probabilistic model which we have set with a high acceptance threshold to generate training data (cells which we can confidently call as a particular singlet group).
-
-````{r }
-sce <- consensus_calls(sce)
-````
-
-# Variant Calling (VarTrix)
-
-Variant calling is not done within the package. 
-Instead, we refer the reader to VarTrix, where they can use the subsetted .vcf file along with their .bam, barcodes.tsv and reference genome to call SNPs.
-
-A sample VarTrix command looks like the following:
-
-````{bash eval=FALSE}
-
-./vartrix -v <path_to_input_vcf> -b <path_to_cellranger_bam> -f <path_to_fasta_file> -c <path_to_cell_barcodes_file> -o <path_for_output_matrix>
-
-````
-
-Using the output matrix from Vartrix and the classifications from the HTO algorithm, we train a knn supervised learning algorithm.
-
-# Cell reassignment, visualisation and evaluation
-
-To keep things tidy, we will add the SNP data to our SingleCellExperiment object as an AlternativeExpreiment.
-This function also filters out SNPs which are observed at a low frequency in the data.
 
 
-````{r}
-
-sce <- add_snps(sce, snps, thresh = 0.95)
-
-altExp(sce, "SNP")
-
-````
-
-Before we reassign any cells, we will first visualise the results from individual algorithms.
-Below, we compare Seurat and CiteFuse classification. 
-Most of the uncertainty here lies between whether a cell is a Singlet/Doublet or Negative rather than which Hashtag.
-
-Splitting the SNP data by Seurat classification, we initially see a large number of 'negative' cells which appear of good quality (high proportion of reads) which may be assignable to another hashtag.
-This is consistent with the library size plot we visualised earlier.
 
 
-````{r}
-test <- Heatmap(counts(altExp(sce, "SNP")), 
-                column_split = sce$seurat, 
-                cluster_rows = FALSE, 
-                show_column_names = FALSE, 
-                cluster_column_slices = FALSE, 
-                column_title_rot = -45, 
-                row_title = "SNPs", 
-                col = colors)
-
-draw(test)
-````
-
-````{r}
-````
-
-````{r}
-sce <- reassign(sce, k = 5)
-
-table(sce$knn)
-````
 
 
-````{r}
-test <- Heatmap(counts(altExp(sce, "SNP")),
-                column_split = sce$knn, 
-                cluster_rows = FALSE, 
-                show_column_names = FALSE, 
-                cluster_column_slices = FALSE, 
-                column_names_rot = 45, 
-                column_title_rot = -45, 
-                row_title = "SNPs", 
-                col = colors)
 
-draw(test)
-````
 
-Focusing in on the new Hashtag5 group, we see that a lot of the Negative cells have now been reclassed to this group, as well as a small number of cells from other groups.
 
-````{r}
-test <- Heatmap(counts(altExp(sce, "SNP"))[, sce$knn == "Hashtag5"], 
-                column_split = sce$seurat[sce$knn == "Hashtag5"], 
-                cluster_rows = FALSE, 
-                show_column_names = FALSE, 
-                cluster_column_slices = FALSE, 
-                column_names_rot = 45, 
-                column_title_rot = -45, 
-                row_title = "SNPs", 
-                col = colors)
 
-draw(test)
-````
 
-# Session Info
 
-````{r}
-sessionInfo()
-````
 
-# References
+
+
+
+
+
+
+

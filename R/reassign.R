@@ -8,12 +8,19 @@
 #' @return A SingleCellExperiment with updated group assignments in "knn" metadata
 #' @export
 #'
+#' @importFrom("methods", "is")
+#'
 #' @examples
 #' sce <- consensus_calls(sce)
 #' sce <- add_snps(sce = sce, mat = snps, thresh = 0.8)
 #' sce <- reassign(sce = sce, k = 10)
 #'
 reassign <- function(sce, k = 10, train_cells = sce$train, predict_cells = sce$predict) {
+    #Input checks
+    stopifnot("'sce' must be of class SingleCellExperiment"=is(sce,"SingleCellExperiment"))
+    stopifnot("k must be greater than or equal to two"=k>1)
+    stopifnot("k must be an integer"=k==round(k))
+
     # Singlet training data
     train <- SingleCellExperiment::counts(SingleCellExperiment::altExp(sce, "SNP"))[, sce$train == TRUE]
     labels <- sce$labels[train_cells == TRUE]

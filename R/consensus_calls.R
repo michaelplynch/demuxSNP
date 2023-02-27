@@ -5,9 +5,15 @@
 #' @return Updated SingleCellExperiment object
 #' @export
 #'
+#' @importFrom("methods", "is")
+#'
 #' @examples sce <- consensus_calls(sce)
 #'
 consensus_calls <- function(sce) {
+    ##Check input
+    stopifnot("'sce' must be of class SingleCellExperiment"=is(sce,"SingleCellExperiment"))
+
+    ##create training data
     rna <- BiocGenerics::colSums(SingleCellExperiment::counts(sce) > 0)
     hto <- as.matrix(SingleCellExperiment::counts(SingleCellExperiment::altExp(sce, "HTO")))
 

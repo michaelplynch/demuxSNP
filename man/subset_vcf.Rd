@@ -4,10 +4,10 @@
 \alias{subset_vcf}
 \title{Subset common variants vcf file to only SNPs seen in most commonly expressed genes}
 \usage{
-subset_vcf(my_vcf, top_genes, ensdb)
+subset_vcf(vcf, top_genes, ensdb)
 }
 \arguments{
-\item{my_vcf}{path to SNPs vcf file}
+\item{vcf}{path to SNPs vcf file}
 
 \item{top_genes}{output from 'common_genes' function}
 

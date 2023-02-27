@@ -7,9 +7,18 @@
 #' @return Updated SingleCellExperiment object
 #' @export
 #'
+#' @importFrom("methods", "is")
+#'
 #' @examples sce <- add_snps(sce = sce, mat = snps, thresh = 0.8)
 #'
 add_snps <- function(sce, mat, thresh = 0.8) {
+    #Input checks
+    stopifnot("'sce' must be of class SingleCellExperiment"=is(sce,"SingleCellExperiment"))
+    stopifnot("thresh must be between 0 and 1"=thresh<1 & thresh>0)
+    stopifnot("SingleCellExperiment and snps matrix contain unequal number of cells"=dim(counts(sce))[2]==dim(snps)[2])
+    stopifnot("Did you run VarTrix in the correct mode?"=identical(mat,round(mat)))
+
+    #Add snps to sce
     mat_obs <- mat[(rowSums(mat > 0) / dim(mat)[2]) > thresh, ]
 
     mat_obs[mat_obs == 0] <- c(0)
