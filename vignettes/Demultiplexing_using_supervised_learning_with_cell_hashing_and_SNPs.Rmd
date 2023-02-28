@@ -140,12 +140,12 @@ in our example data, we see that the signal and noise overlap to varying extents
 ````{r echo=FALSE, warning=FALSE, fig.height=4,fig.width=7.5}
 htos <- as.data.frame(t(as.matrix(log(counts(altExp(sce, "HTO"))))))
 
-x1 <- gghistogram(htos, x = "Hashtag1", fill = dittoColors(1)[1], palette = "lancet", xlim = c(0, 7), ylim = c(0, 1000), alpha = 1)
-x2 <- gghistogram(htos, x = "Hashtag2", fill = dittoColors(1)[2], palette = "lancet", xlim = c(0, 7), ylim = c(0, 1000), alpha = 1)
-x3 <- gghistogram(htos, x = "Hashtag3", fill = dittoColors(1)[3], palette = "lancet", xlim = c(0, 7), ylim = c(0, 1000), alpha = 1)
-x4 <- gghistogram(htos, x = "Hashtag4", fill = dittoColors(1)[4], palette = "lancet", xlim = c(0, 7), ylim = c(0, 1000), alpha = 1)
-x5 <- gghistogram(htos, x = "Hashtag5", fill = dittoColors(1)[5], palette = "lancet", xlim = c(0, 7), ylim = c(0, 1000), alpha = 1)
-x6 <- gghistogram(htos, x = "Hashtag6", fill = dittoColors(1)[6], palette = "lancet", xlim = c(0, 7), ylim = c(0, 1000), alpha = 1)
+x1 <- gghistogram(htos, x = "Hashtag1", fill = dittoColors(1)[1], palette = "lancet", xlim = c(0, 10), ylim = c(0, 1000), alpha = 1)
+x2 <- gghistogram(htos, x = "Hashtag2", fill = dittoColors(1)[2], palette = "lancet", xlim = c(0, 10), ylim = c(0, 1000), alpha = 1)
+x3 <- gghistogram(htos, x = "Hashtag3", fill = dittoColors(1)[3], palette = "lancet", xlim = c(0, 10), ylim = c(0, 1000), alpha = 1)
+x4 <- gghistogram(htos, x = "Hashtag4", fill = dittoColors(1)[4], palette = "lancet", xlim = c(0, 10), ylim = c(0, 1000), alpha = 1)
+x5 <- gghistogram(htos, x = "Hashtag5", fill = dittoColors(1)[5], palette = "lancet", xlim = c(0, 10), ylim = c(0, 1000), alpha = 1)
+x6 <- gghistogram(htos, x = "Hashtag6", fill = dittoColors(1)[6], palette = "lancet", xlim = c(0, 10), ylim = c(0, 1000), alpha = 1)
 
 ggarrange(x1, x2, x3, x4, x5, x6, align = "hv", ncol = 3, nrow = 2)
 ````
@@ -214,7 +214,7 @@ Using the output matrix from Vartrix and the classifications from the HTO algori
 
 # Cell reassignment, visualisation and evaluation
 
-To keep things tidy, we will add the SNP data to our SingleCellExperiment object as an AlternativeExpreiment.
+To keep things tidy, we will add the SNP data to our SingleCellExperiment object as an AlternativeExperiment.
 This function also filters out SNPs which are observed at a low frequency in the data.
 
 
@@ -244,7 +244,7 @@ test <- Heatmap(counts(altExp(sce, "SNP")),
                 row_title = "SNPs", 
                 col = colors)
 
-draw(test)
+draw(test,column_title="SNP profiles split by Seurat Hashtag call")
 ````
 
 ````{r}
@@ -268,7 +268,7 @@ test <- Heatmap(counts(altExp(sce, "SNP")),
                 row_title = "SNPs", 
                 col = colors)
 
-draw(test)
+draw(test,column_title="SNP profiles split by updated knn classification")
 ````
 
 Focusing in on the new Hashtag5 group, we see that a lot of the Negative cells have now been reclassed to this group, as well as a small number of cells from other groups.
@@ -284,7 +284,18 @@ test <- Heatmap(counts(altExp(sce, "SNP"))[, sce$knn == "Hashtag5"],
                 row_title = "SNPs", 
                 col = colors)
 
-draw(test)
+draw(test,column_title("knn Hashtag5 group split by original Seurat classification"))
+````
+
+## Majority Voting
+
+Should be robust to errors in training data?
+
+
+````{r}
+
+
+
 ````
 
 # Session Info
