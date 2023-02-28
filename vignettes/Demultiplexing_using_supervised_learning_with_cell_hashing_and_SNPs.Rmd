@@ -1,8 +1,10 @@
 ---
 title: "Demultiplexing_using_supervised_learning_with_cell_hashing_and_SNPs"
 author:
-  - name: Michael Lynch, University of Limerick
-  - name: Aedin Culhane, University of Limerick
+  - name: Michael Lynch
+    affiliation: University of Limerick
+  - name: Aedin Culhane
+    affiliation: University of Limerick
 output:
   BiocStyle::html_document:
     toc_float: true
@@ -44,8 +46,9 @@ colors <- structure(viridis(n = 3), names = c("-1", "0", "1"))
 
 # Introduction
 
-Demultiplexing in scRNAseq involves assigning cells back to their original sample, where cells from different donors, treatment types or physiological locations are sequenced together.
-This allows for a significant reduction in cost of sequencing as well as facilitating removal of technical artifacts such as batch effects and multi sample doublets.
+Multiplexing in scRNAseq means sequencing samples from different patients, treatment types or physiological locations together, resulting in significant cost savings. 
+Demultiplexing then involves assigning cells back to their original sample.
+
 To address this need, a large number of methods have been proposed. 
 However, a universally robust algorithms remains elusive.
 Below, we introduce some existing methods and highlight the novel features of our approach and its advantages to the user.
@@ -60,11 +63,9 @@ Due to non-specific binding, these counts generally form a bimodal distribution.
 Such methods are generally computationally efficient.
 Their performance, however, is highly dependent on the tagging quality.
 
-Binary vs probabilistic methods
-
-To extend this, recent methods now attempt to probabilistically model this process, allowing users to define a cut-off threshold for the assignment confidence.
-While these methods give the user greater flexibility in determinng which cells to keep, the question remains as to what an appropriate value for a sensible cut off is.
-This also results in the removal of potentially high quality, valuable cells from downstream analysis.
+More recent methods, including [demuxmix](https://bioconductor.org/packages/release/bioc/html/demuxmix.html), now attempt to probabilistically model this process, allowing users to define a cut-off threshold for the assignment confidence.
+While these methods give the user greater flexibility in determining which cells to keep, the question remains as to what a sensible cut off value is.
+This also results in the removal of cells due to poor hashing quality rather than RNA quality.
 
 @boggy_bff_2022
 
@@ -77,26 +78,29 @@ This also results in the removal of potentially high quality, valuable cells fro
 ### SNPs
 
 The second class of methods exploits natural genetic variation between cells and so can only be used where the groups are genetically distinct.
-Demuxlet @kang_multiplexed_2018 -high accuracy but requires genotype information
-Souporcell @heaton_souporcell_2020 and Vireo @huang_vireo_2019
+Demuxlet @kang_multiplexed_2018 uses genotype information from each group to classify samples.
+To address this, Souporcell @heaton_souporcell_2020 and Vireo @huang_vireo_2019 were developed to classify cells without genotype information.
 The performance of these methods is reduced by the presence of ambient RNA and unequal donor contributions.
 
-Demuxlet remains the standard used to benchmark other methods.
+Demuxlet remains the standard used to benchmark other methods but its more widespread adoption has been limited by the requirement of sample genotype information.
 
 ## Motivation
 
-Here, we aim to leverage information from both modalities to optimise classification and minimise waste.
-We note that as with other SNP based methods, genetic difference between sampe groups is a prerequisite, as well as sufficient sequencing depth.
+**With cell hashing, we can confidently demultiplex *some* but not *all* cells.
+Using these high confidence cells, we can learn the SNPs associated with each group.
+This information can then be used to assign remaining cells (which we could not confidently call using cell hashing) to their most similar group based on their SNP profile.**
 
 Novel features:
 
 * Uses both cell hashing and SNP data. 
 Current methods are limited to using either the cell hashing counts or SNP calls.
-By using a supervised approach, performance increases in classification, particularly when cell contributions are unevenly distributed.
+By using a supervised approach, performance increases in classification relative to unsupervised SNP approaches, particularly when cell contributions are unevenly distributed.
 * Selects SNPs based on gene expression to reduce noise and computational cost.
-This reduces artifacts caused by cell-type and speeds things up.
 
+Impact:
 
+* Users can visually confirm validity (or lack thereof) of existing demultiplexing results in a tangible manner.
+* Users can recover otherwise high quality cells which could not be confidently assigned using other methods.
 
 ## Installation
 
@@ -123,6 +127,54 @@ sce<-add_snps(sce,mat)
 sce<-reassign(sce)
 
 ````
+
+## Function explanation
+
+````{r eval=FALSE}
+
+top_genes<-common_genes(sce)
+
+````
+
+This function returns the genes which are expressed (expression > 0) in the highest proportion of cells.
+These genes are used below to subset the vcf file.
+
+````{r eval=FALSE}
+
+subset_vcf(vcf, top_geens, ensdb)
+
+````
+
+This function subsets a supplied vcf to SNP locations within the genes supplied. 
+The ranges of the genes are extracted from the EnsDb object.
+
+````{r eval=FALSE}
+
+sce<-consensus_calls(sce)
+
+````
+
+This function takes a SingleCellExperiment object with HTO altExp, runs [demuxmix](https://bioconductor.org/packages/release/bioc/html/demuxmix.html) and returns a vector of assigned labels.
+
+````{r eval=FALSE}
+
+sce<-add_snps(sce,snps)
+
+````
+
+Adds the SNP data to the SingleCellExperiment object as an altExp.
+Additionally, filteres out SNPs with no reads in less than 'thresh' proportion of cells.
+
+````{r eval=FALSE}
+
+sce<-reassign(sce)
+
+````
+
+Reassignment based on SNP profiles of high confidence cells.
+Singlet training data is based on high confidence singlet assignment.
+To simulate doublets in the training data, we systematically sample and combine n cells pairs from each grouping combination.
+
 
 # Exploratory analysis
 
@@ -180,21 +232,44 @@ For the remainder of this vignette we'll outline our method of checking whether 
 Common variants files, for example from the 1000 Genomes Project, can contain over 7 million SNPs.
 To reduce computational cost and cell-type effects, we subset our SNPs list to those located within genes expressed across most cells in our data.
 
-We first find the most commonly expressed genes in our RNA data, then subset the vcf file to SNPs seen in those genes.
+We first find the most commonly expressed genes in our RNA data.
 
 ````{r}
 top_genes <- common_genes(sce = sce)
 
+top_genes[1:10]
+
+````
+
+We have a sample vcf preloaded, but you can load a vcf file in using readVcf()
+
+````{r eval=FALSE}
+
+vcf<-readVcf('filepath',genome="GRCh38")
+
+````
+
+We will subset our vcf file to SNPs seen in our commonly expressed genes.
+Notice that the genome for the vcf and EnsDb object must be compatible!
+
+The returned vcf can be written to file and used with VarTrix later on.
+
+````{r}
 ensdb<-EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86
+
+seqinfo(vcf)@genome[1]==seqinfo(ensdb)@genome[1]
+
 subset_vcf(vcf, top_genes = top_genes,ensdb)
 ````
 
 Next, we wish to identify cells which we can confidently call to a particular group.
 There are a number of ways this can be achieved, including probabilistic modelling of the HTO counts, manually setting non-conservative thresholds or using consensus calls. 
-Here we have used demuxmix, a probabilistic model which we have set with a high acceptance threshold to generate training data (cells which we can confidently call as a particular singlet group).
+Here we have used [demuxmix](https://bioconductor.org/packages/release/bioc/html/demuxmix.html), a probabilistic model which we have set with a high acceptance threshold to identify high confidence cell calls to use as training data (cells which we can confidently call as a particular singlet group).
 
 ````{r }
 sce <- consensus_calls(sce)
+
+table(sce$train)
 ````
 
 # Variant Calling (VarTrix)
@@ -214,11 +289,13 @@ Using the output matrix from Vartrix and the classifications from the HTO algori
 
 # Cell reassignment, visualisation and evaluation
 
-To keep things tidy, we will add the SNP data to our SingleCellExperiment object as an AlternativeExperiment.
-This function also filters out SNPs which are observed at a low frequency in the data.
+To keep things tidy, we will add the SNP data to our SingleCellExperiment object as an alternative Experiment.
+This function also filters out SNPs which are observed at a low frequency in the data, and the threshold can be set manually.
 
 
 ````{r}
+
+dim(snps)
 
 sce <- add_snps(sce, snps, thresh = 0.95)
 
@@ -227,8 +304,6 @@ altExp(sce, "SNP")
 ````
 
 Before we reassign any cells, we will first visualise the results from individual algorithms.
-Below, we compare Seurat and CiteFuse classification. 
-Most of the uncertainty here lies between whether a cell is a Singlet/Doublet or Negative rather than which Hashtag.
 
 Splitting the SNP data by Seurat classification, we initially see a large number of 'negative' cells which appear of good quality (high proportion of reads) which may be assignable to another hashtag.
 This is consistent with the library size plot we visualised earlier.
