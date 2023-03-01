@@ -7,10 +7,10 @@
 consensus_calls(sce)
 }
 \arguments{
-\item{sce}{SingleCellExperiment object}
+\item{sce}{object of class SingleCellExperiment with HTO altExp assay}
 }
 \value{
-Updated SingleCellExperiment object
+Updated SingleCellExperiment object with logical vector indicating training data, data to be classified (complement of training data) and labels.
 }
 \description{
 Run existing cell hashing algorithms

@@ -1,4 +1,4 @@
-Package: SNPcheck
+Package: demuxSNP
 Title: Visualising and reassigning cell hashing demultiplexing using SNPs
 Version: 1.2.0
 Authors@R: 

@@ -30,7 +30,7 @@ knitr::opts_chunk$set(
 
 ```{r }
 
-library(SNPcheck)
+library(demuxSNP)
 library(ComplexHeatmap)
 library(viridisLite)
 library(Seurat)
@@ -105,9 +105,9 @@ It is similar to demuxlet in the sense that the classifier uses group specific S
 
 ````{r eval=FALSE}
 
-devtools::install_github("michaelplynch/SNPcheck", build_vignettes = TRUE)
+devtools::install_github("michaelplynch/demuxSNP", build_vignettes = TRUE)
 
-browseVignettes(package="SNPcheck")
+browseVignettes(package="demuxSNP")
 
 ````
 
@@ -181,7 +181,7 @@ We load three data objects.
 A SingleCellExperiment object containing RNA and HTO counts, a .vcf file of class XXX containing SNPs and a matrix of class XXX containing SNP information for each cell (we will show you how to generate this SNPs matrix using [VarTrix](https://github.com/10XGenomics/vartrix) outside of R).
 
 ````{r}
-data(sce,vcf,snps,package="SNPcheck")
+data(sce,vcf,snps,package="demuxSNP")
 
 class(sce)
 class(vcf)

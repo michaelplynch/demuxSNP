@@ -1,3 +1,4 @@
-test_that("multiplication works", {
-  expect_equal(2 * 2, 4)
+test_that("Only accepts SCE object", {
+  seurat<-Seurat::as.Seurat(sce,data=NULL)
+  expect_error(reassign(seurat))
 })

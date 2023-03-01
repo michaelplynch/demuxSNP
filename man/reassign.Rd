@@ -7,9 +7,9 @@
 reassign(sce, k = 10, train_cells = sce$train, predict_cells = sce$predict)
 }
 \arguments{
-\item{sce}{Single Cell Experiment object}
+\item{sce}{object of class SingleCellExperiment}
 
-\item{k}{number of neighbours in knn, default to 10}
+\item{k}{number of neighbours used in knn, defaults to 10}
 
 \item{train_cells}{logical vector specifying which cells to use to train classifier}
 
@@ -19,7 +19,9 @@ reassign(sce, k = 10, train_cells = sce$train, predict_cells = sce$predict)
 A SingleCellExperiment with updated group assignments in "knn" metadata
 }
 \description{
-Reassign cells using knn
+k-nearest neighbour classification of cells.
+Training data is intended to be labels of cells confidently called using cell hashing based methods and their correspodning SNPs.
+Prediction data can ban be remaining cells but can also include the training data.
 }
 \examples{
 sce <- consensus_calls(sce)

@@ -2,18 +2,21 @@
 % Please edit documentation in R/common_genes.R
 \name{common_genes}
 \alias{common_genes}
-\title{Return a list of the top 100 most commonly expressed genes from a SingleCellExperiment object.}
+\title{Return a character vector of top n most frequent genes from a SingleCellExperiment object.}
 \usage{
-common_genes(sce)
+common_genes(sce, n = 100)
 }
 \arguments{
 \item{sce}{A SingleCellExperiment object}
+
+\item{n}{number of genes to be returned. Defaults to n=100.}
 }
 \value{
-names of top 100 most commonly expressed genes.
+character vector of n most frequently expressed genes.
 }
 \description{
-Return a list of the top 100 most commonly expressed genes from a SingleCellExperiment object.
+Returns a character vector of the top n most frequently expressed genes from the counts of the SingleCellExperiment object.
+Expression is based on having a count > 0 in a given cell.
 }
 \examples{
 sce <- common_genes(sce)

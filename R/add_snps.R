@@ -1,7 +1,7 @@
 #' Add SNPs to SingleCellExperiment object
 #'
-#' @param sce SingleCellExperiment object
-#' @param mat .mtx output from VartTrix
+#' @param sce object of class SingleCellExperiment
+#' @param mat object of class matrix, output from VarTrix
 #' @param thresh threshold presence of SNP, defaults to 0.8
 #'
 #' @return Updated SingleCellExperiment object

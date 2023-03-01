@@ -7,9 +7,9 @@
 add_snps(sce, mat, thresh = 0.8)
 }
 \arguments{
-\item{sce}{SingleCellExperiment object}
+\item{sce}{object of class SingleCellExperiment}
 
-\item{mat}{.mtx output from VartTrix}
+\item{mat}{object of class matrix, output from VarTrix}
 
 \item{thresh}{threshold presence of SNP, defaults to 0.8}
 }

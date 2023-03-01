@@ -1,7 +1,11 @@
 #' Reassign cells using knn
 #'
-#' @param sce Single Cell Experiment object
-#' @param k number of neighbours in knn, default to 10
+#' @description k-nearest neighbour classification of cells.
+#' Training data is intended to be labels of cells confidently called using cell hashing based methods and their correspodning SNPs.
+#' Prediction data can ban be remaining cells but can also include the training data.
+#'
+#' @param sce object of class SingleCellExperiment
+#' @param k number of neighbours used in knn, defaults to 10
 #' @param train_cells logical vector specifying which cells to use to train classifier
 #' @param predict_cells logical vector specifying which cells to classify
 #'

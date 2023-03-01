@@ -1,8 +1,8 @@
 #' Run existing cell hashing algorithms
 #'
-#' @param sce SingleCellExperiment object
+#' @param sce object of class SingleCellExperiment with HTO altExp assay
 #'
-#' @return Updated SingleCellExperiment object
+#' @return Updated SingleCellExperiment object with logical vector indicating training data, data to be classified (complement of training data) and labels.
 #' @export
 #'
 #' @importFrom methods is

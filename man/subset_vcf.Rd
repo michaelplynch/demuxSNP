@@ -2,22 +2,22 @@
 % Please edit documentation in R/subset_vcf.R
 \name{subset_vcf}
 \alias{subset_vcf}
-\title{Subset common variants vcf file to only SNPs seen in most commonly expressed genes}
+\title{Subset common variants vcf file to only SNPs seen in 'top_genes'}
 \usage{
 subset_vcf(vcf, top_genes, ensdb)
 }
 \arguments{
-\item{vcf}{path to SNPs vcf file}
+\item{vcf}{object of class CollapsedVCF}
 
-\item{top_genes}{output from 'common_genes' function}
+\item{top_genes}{output from 'common_genes' function, alternatively character vector containing custom gene names.}
 
-\item{ensdb}{object of class ensdb corresponding to organism, genome of data}
+\item{ensdb}{object of class EnsDb corresponding to organism, genome of data}
 }
 \value{
-common_snps.vcf vcf file containing subset of SNPs from common variants file seen in commonly expressed genes
+object of class CollapsedVCF containing subset of SNPs from supplied vcf seen in commonly expressed genes
 }
 \description{
-Subset common variants vcf file to only SNPs seen in most commonly expressed genes
+Subset common variants vcf file to only SNPs seen in 'top_genes'
 }
 \examples{
 top_genes <- common_genes(sce)

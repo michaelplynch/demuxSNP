@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/reference/test_package.html#special-files
 
 library(testthat)
-library(SNPcheck)
+library(demuxSNP)
 
-test_check("SNPcheck")
+test_check("demuxSNP")

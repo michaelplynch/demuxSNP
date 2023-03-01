@@ -1,9 +1,10 @@
-#' Subset common variants vcf file to only SNPs seen in most commonly expressed genes
+#' Subset common variants vcf file to only SNPs seen in 'top_genes'
 #'
-#' @param vcf path to SNPs vcf file
-#' @param top_genes output from 'common_genes' function
-#' @param ensdb object of class ensdb corresponding to organism, genome of data
-#' @return common_snps.vcf vcf file containing subset of SNPs from common variants file seen in commonly expressed genes
+#' @param vcf object of class CollapsedVCF
+#' @param top_genes output from 'common_genes' function, alternatively character vector containing custom gene names.
+#' @param ensdb object of class EnsDb corresponding to organism, genome of data
+#'
+#' @return object of class CollapsedVCF containing subset of SNPs from supplied vcf seen in commonly expressed genes
 #' @export
 #'
 #' @import ensembldb

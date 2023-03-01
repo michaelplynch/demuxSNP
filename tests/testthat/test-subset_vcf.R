@@ -1,3 +1,5 @@
-test_that("multiplication works", {
-  expect_equal(2 * 2, 4)
+test_that("Only accept character genes", {
+  top_genes<-seq_len(5)
+  ensdb<-EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86
+  expect_error(subset_vcf(vcf,top_genes,ensdb))
 })

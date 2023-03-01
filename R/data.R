@@ -1,6 +1,6 @@
 #' SingleCellExperiment object containing RNA and HTO data
 #'
-#' Example SingleCellExperiment object used throughout and built upon in SNPcheck workflow.
+#' Example SingleCellExperiment object used throughout and built upon in demuxSNP workflow.
 #'
 #' @format ## `sce`
 #' A data frame with 7,240 rows and 60 columns:
