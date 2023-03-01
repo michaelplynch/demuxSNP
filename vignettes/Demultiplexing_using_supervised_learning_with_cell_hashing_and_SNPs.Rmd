@@ -1,5 +1,5 @@
 ---
-title: "Demultiplexing_using_supervised_learning_with_cell_hashing_and_SNPs"
+title: "Supervised Demultiplexing using Cell Hashing and SNPs"
 author:
   - name: Michael Lynch
     affiliation: University of Limerick
@@ -10,7 +10,7 @@ output:
     toc_float: true
 bibliography: references.bib
 vignette: |
-  %\VignetteIndexEntry{dim reduction with corral}
+  %\VignetteIndexEntry{supervised demultiplexing using snps}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
   
@@ -47,44 +47,39 @@ colors <- structure(viridis(n = 3), names = c("-1", "0", "1"))
 # Introduction
 
 Multiplexing in scRNAseq means sequencing samples from different patients, treatment types or physiological locations together, resulting in significant cost savings. 
-Demultiplexing then involves assigning cells back to their original sample.
-
-To address this need, a large number of methods have been proposed. 
-However, a universally robust algorithms remains elusive.
-Below, we introduce some existing methods and highlight the novel features of our approach and its advantages to the user.
+Demultiplexing then involves assigning cells back to their original sample and a large number of methods have been proposed to facilitate this. 
+However, a universally robust algorithm remains elusive.
+Below, we introduce some existing methods, highlight the novel features of our approach and its advantages to the user.
 
 ## Existing methods
-
 
 ### Cell Hashing
 
 Cells from each group are labelled with a distinct tag (HTO or LMO) which is sequenced to give a counts matrix.
-Due to non-specific binding, these counts generally form a bimodal distribution.
+Due to non-specific binding, these counts form a bimodal distribution.
 Such methods are generally computationally efficient.
-Their performance, however, is highly dependent on the tagging quality.
-
-More recent methods, including [demuxmix](https://bioconductor.org/packages/release/bioc/html/demuxmix.html), now attempt to probabilistically model this process, allowing users to define a cut-off threshold for the assignment confidence.
-While these methods give the user greater flexibility in determining which cells to keep, the question remains as to what a sensible cut off value is.
-This also results in the removal of cells due to poor hashing quality rather than RNA quality.
-
-@boggy_bff_2022
-
-@stoeckius_cell_2018
-
-@kim_citefuse_2020
+Their classification performance, however, is highly dependent on the tagging quality and many methods do not account for uncertainty in classification (@boggy_bff_2022,
+@stoeckius_cell_2018 &
+@kim_citefuse_2020).
 
 
+More recent methods, including [demuxmix](https://bioconductor.org/packages/release/bioc/html/demuxmix.html), assign a probability that a cell is from a particular group, or made up of multiple groups (doublet). 
+This allows users to define a cut-off threshold for the assignment confidence.
+Accounting for uncertainty is an important feature for these types of algorithms, but while these methods give the user greater flexibility in determining which cells to keep, the question remains as to what a sensible cut off value is.
+This also results in the removal of cells from downstream analysis steps due to poor hashing quality rather than RNA quality.
 
 ### SNPs
 
 The second class of methods exploits natural genetic variation between cells and so can only be used where the groups are genetically distinct.
-Demuxlet @kang_multiplexed_2018 uses genotype information from each group to classify samples.
-To address this, Souporcell @heaton_souporcell_2020 and Vireo @huang_vireo_2019 were developed to classify cells without genotype information.
-The performance of these methods is reduced by the presence of ambient RNA and unequal donor contributions.
+Demuxlet (@kang_multiplexed_2018) uses genotype information from each group to classify samples.
+This genotype incurs additional experimental cost.
+To address this, Souporcell (@heaton_souporcell_2020) and Vireo (@huang_vireo_2019) among other methods were developed to classify cells based on their SNPs in an unsupervised mannger.
+Due to being unsupervised, these methods may struggle to identify groups with low proportions of cells.
 
-Demuxlet remains the standard used to benchmark other methods but its more widespread adoption has been limited by the requirement of sample genotype information.
 
-## Motivation
+Demuxlet remains the standard often used to benchmark other methods but its more widespread adoption has been limited by the requirement of sample genotype information.
+
+## demuxSNP Motivation
 
 **With cell hashing, we can confidently demultiplex *some* but not *all* cells.
 Using these high confidence cells, we can learn the SNPs associated with each group.
@@ -95,12 +90,16 @@ Novel features:
 * Uses both cell hashing and SNP data. 
 Current methods are limited to using either the cell hashing counts or SNP calls.
 By using a supervised approach, performance increases in classification relative to unsupervised SNP approaches, particularly when cell contributions are unevenly distributed.
-* Selects SNPs based on gene expression to reduce noise and computational cost.
+* Selects SNPs based on gene expression in a large proportion of cells to reduce noise,computational cost and increase interpretability.
 
 Impact:
 
 * Users can visually confirm validity (or lack thereof) of existing demultiplexing results in a tangible manner.
 * Users can recover otherwise high quality cells which could not be confidently assigned using other methods.
+
+Note: the approach used here differs from most SNP methods in that it is supervised. 
+We attain knowledge of which SNPs are associated with which patients then train our classifier around this.
+It is similar to demuxlet in the sense that the classifier uses group specific SNP information, **however** our methods does not require the expense of genotyping and so may be much more widely applicable.
 
 ## Installation
 
@@ -123,12 +122,12 @@ small_vcf<-subset_vcf(sce,vcf)
 sce<-consensus_calls(sce)
 
 ## Reassignment
-sce<-add_snps(sce,mat)
+sce<-add_snps(sce,snps)
 sce<-reassign(sce)
 
 ````
 
-## Function explanation
+## Function Explanation
 
 ````{r eval=FALSE}
 
@@ -136,16 +135,16 @@ top_genes<-common_genes(sce)
 
 ````
 
-This function returns the genes which are expressed (expression > 0) in the highest proportion of cells.
-These genes are used below to subset the vcf file.
+Returns the genes which are expressed (expression > 0) in the highest proportion of cells.
+These genes are used below to subset the .vcf file.
 
 ````{r eval=FALSE}
 
-subset_vcf(vcf, top_geens, ensdb)
+new_vcf<-subset_vcf(vcf, top_geens, ensdb)
 
 ````
 
-This function subsets a supplied vcf to SNP locations within the genes supplied. 
+This function subsets a supplied .vcf to SNP locations within the genes supplied. 
 The ranges of the genes are extracted from the EnsDb object.
 
 ````{r eval=FALSE}
@@ -162,8 +161,8 @@ sce<-add_snps(sce,snps)
 
 ````
 
-Adds the SNP data to the SingleCellExperiment object as an altExp.
-Additionally, filteres out SNPs with no reads in less than 'thresh' proportion of cells.
+Adds the SNP data from VarTrix to the SingleCellExperiment object as an altExp.
+Additionally, filters out SNPs with no reads in less than 'thresh' proportion of cells.
 
 ````{r eval=FALSE}
 
@@ -173,21 +172,25 @@ sce<-reassign(sce)
 
 Reassignment based on SNP profiles of high confidence cells.
 Singlet training data is based on high confidence singlet assignment.
-To simulate doublets in the training data, we systematically sample and combine n cells pairs from each grouping combination.
+Doublets are accounted for by systematically sampling and combining the SNP profiles of n cells pairs from each grouping combination.
 
 
-# Exploratory analysis
+# Exploratory Analysis
 
 We load three data objects. 
-A SingleCellExperiment object containing RNA and HTO counts, a vcf file containing SNPs and a matrix containing SNP information for each cell (we will show you how to generate this SNPs matrix using VarTrix outside of R).
+A SingleCellExperiment object containing RNA and HTO counts, a .vcf file of class XXX containing SNPs and a matrix of class XXX containing SNP information for each cell (we will show you how to generate this SNPs matrix using [VarTrix](https://github.com/10XGenomics/vartrix) outside of R).
 
 ````{r}
 data(sce,vcf,snps,package="SNPcheck")
+
+class(sce)
+class(vcf)
+class(snps)
 ````
 
 The HTO or LMO distribution is usually bimodal, with a signal (high counts) and background distribution (low counts) caused by non-specific binding.
 Ideally, these distributions would be clearly separated with no overlap, but in practice, this is not always the  case.
-in our example data, we see that the signal and noise overlap to varying extents in each Hashtag.
+In our example data, we see that the signal and noise overlap to varying extents in each group.
 
 ````{r echo=FALSE, warning=FALSE, fig.height=4,fig.width=7.5}
 htos <- as.data.frame(t(as.matrix(log(counts(altExp(sce, "HTO"))))))
@@ -202,9 +205,10 @@ x6 <- gghistogram(htos, x = "Hashtag6", fill = dittoColors(1)[6], palette = "lan
 ggarrange(x1, x2, x3, x4, x5, x6, align = "hv", ncol = 3, nrow = 2)
 ````
 
-As an example, we will run HTODemux on the data.
+We will begin by running HTODemux, a popular HTO demultiplexing algorithm on the data.
 
 ````{r}
+
 seurat <- as.Seurat(sce,data=NULL)
 seurat <- HTODemux(seurat)
 seurat$hash.ID <- factor(as.character(seurat$hash.ID))
@@ -217,7 +221,7 @@ table(sce$seurat)
 
 Here, we see an unusually large number of cells being called as "Negative".
 
-Additionally, the library size of the "Negative" group looks similar to that of other groups.
+Additionally, the library size of the "Negative" group looks similar to that of other groups, indicating that they may be miscalssified as "Negative" due to their staining quality rather than overall RNA quality.
 
 
 ````{r}
@@ -225,7 +229,7 @@ seurat$libsize <- colSums(GetAssayData(seurat,slot="counts",assay="RNA"))
 dittoPlot(seurat, "libsize", group.by = "hash.ID")
 ````
 
-For the remainder of this vignette we'll outline our method of checking whether or not cells have been called correctly and how to assign them to their appropriate group!
+For the remainder of this vignette we'll outline our method of checking whether or not these cells have been called correctly and how to assign them to their appropriate group!
 
 # Preprocessing
 
@@ -249,7 +253,7 @@ vcf<-readVcf('filepath',genome="GRCh38")
 
 ````
 
-We will subset our vcf file to SNPs seen in our commonly expressed genes.
+We will subset our .vcf file to SNPs seen in our commonly expressed genes.
 Notice that the genome for the vcf and EnsDb object must be compatible!
 
 The returned vcf can be written to file and used with VarTrix later on.
@@ -259,7 +263,9 @@ ensdb<-EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86
 
 seqinfo(vcf)@genome[1]==seqinfo(ensdb)@genome[1]
 
-subset_vcf(vcf, top_genes = top_genes,ensdb)
+new_vcf<-subset_vcf(vcf, top_genes = top_genes,ensdb)
+
+new_vcf
 ````
 
 Next, we wish to identify cells which we can confidently call to a particular group.
@@ -272,10 +278,13 @@ sce <- consensus_calls(sce)
 table(sce$train)
 ````
 
+So, for this particular dataset, we can confidently call 1,045 cells as being from a particular singlet group.
+The remaining 955 may be from a singlet group or a doublet, but we cannot say for sure at this stage.
+
 # Variant Calling (VarTrix)
 
 Variant calling is not done within the package. 
-Instead, we refer the reader to VarTrix, where they can use the subsetted .vcf file along with their .bam, barcodes.tsv and reference genome to call SNPs.
+Instead, we refer the reader to [VarTrix](https://github.com/10XGenomics/vartrix), where they can use the subsetted .vcf file along with their .bam, barcodes.tsv and reference genome to call SNPs in each cell.
 
 A sample VarTrix command looks like the following:
 
@@ -287,10 +296,10 @@ A sample VarTrix command looks like the following:
 
 Using the output matrix from Vartrix and the classifications from the HTO algorithm, we train a knn supervised learning algorithm.
 
-# Cell reassignment, visualisation and evaluation
+# Cell Reassignment, Visualisation and Evaluation
 
-To keep things tidy, we will add the SNP data to our SingleCellExperiment object as an alternative Experiment.
-This function also filters out SNPs which are observed at a low frequency in the data, and the threshold can be set manually.
+To keep things tidy, we will add the SNP data to our SingleCellExperiment object as an altExp.
+This function also filters out SNPs which are observed at a low frequency in the data, and the frequency threshold can be set manually.
 
 
 ````{r}
@@ -303,9 +312,11 @@ altExp(sce, "SNP")
 
 ````
 
-Before we reassign any cells, we will first visualise the results from individual algorithms.
 
-Splitting the SNP data by Seurat classification, we initially see a large number of 'negative' cells which appear of good quality (high proportion of reads) which may be assignable to another hashtag.
+
+Before we reassign any cells, we will first demonstrate visualising of results from stand-alone algorithms.
+
+Splitting the SNP data by Seurat classification, we initially see a large number of 'negative' cells which appear of good quality (high proportion of reads) which may be assignable to another group.
 This is consistent with the library size plot we visualised earlier.
 
 
@@ -322,8 +333,8 @@ test <- Heatmap(counts(altExp(sce, "SNP")),
 draw(test,column_title="SNP profiles split by Seurat Hashtag call")
 ````
 
-````{r}
-````
+
+
 
 ````{r}
 sce <- reassign(sce, k = 5)
@@ -362,21 +373,48 @@ test <- Heatmap(counts(altExp(sce, "SNP"))[, sce$knn == "Hashtag5"],
 draw(test,column_title="knn Hashtag5 group split by original Seurat classification")
 ````
 
-## Majority Voting
-
-Should be robust to errors in training data?
-
+## AUC
 
 ````{r}
 
+sce_test<-sce[,sce$train==TRUE]
+sce_test$knn<-NULL
+sce_test<-reassign(sce_test,train_cells = sce_test$train,predict_cells = sce_test$train)
 
+sce_test$labels<-droplevels(sce_test$labels)
+
+table(sce_test$knn)
+table(sce_test$labels)
+
+table(sce_test$labels,sce_test$knn)
+````
+
+## Robustness to Misclassified Cells in Training Data
+
+Should be robust to errors in training data?
+
+````{r}
+sce_test$knn<-NULL
+
+table(sce_test$labels)
+
+sce_test$labels2<-droplevels(sce_test$labels)
+sce_test$labels2[which(sce_test$labels2=="Hashtag5")[1:25]]<-"Hashtag2"
+
+table(sce_test$labels,sce_test$labels2)
+
+sce_test<-reassign(sce_test,train_cells = sce_test$train, predict_cells = sce_test$train)
+
+table(sce_test$knn,sce_test$labels)
 
 ````
 
 # Session Info
 
 ````{r}
+
 sessionInfo()
+
 ````
 
 # References
