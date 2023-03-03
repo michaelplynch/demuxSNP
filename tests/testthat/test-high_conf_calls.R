@@ -1,4 +1,4 @@
 test_that("Only accepts SCE object", {
   seurat<-Seurat::as.Seurat(sce,data=NULL)
-  expect_error(consensus_calls(seurat))
+  expect_error(high_conf_calls(seurat))
 })

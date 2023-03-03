@@ -4,12 +4,20 @@
 \alias{reassign}
 \title{Reassign cells using knn}
 \usage{
-reassign(sce, k = 10, train_cells = sce$train, predict_cells = sce$predict)
+reassign(
+  sce,
+  k = 10,
+  d = 10,
+  train_cells = sce$train,
+  predict_cells = sce$predict
+)
 }
 \arguments{
 \item{sce}{object of class SingleCellExperiment}
 
 \item{k}{number of neighbours used in knn, defaults to 10}
+
+\item{d}{number of doublets per group combination to simulate, defaults to 10}
 
 \item{train_cells}{logical vector specifying which cells to use to train classifier}
 

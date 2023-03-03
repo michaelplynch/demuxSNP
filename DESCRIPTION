@@ -1,6 +1,6 @@
 Package: demuxSNP
 Title: Visualising and reassigning cell hashing demultiplexing using SNPs
-Version: 1.2.0
+Version: 0.2.0
 Authors@R: 
     person("Michael", "Lynch", , "michael.lynch@ul.ie", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-9535-6461"))

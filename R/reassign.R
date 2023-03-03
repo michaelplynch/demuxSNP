@@ -6,6 +6,7 @@
 #'
 #' @param sce object of class SingleCellExperiment
 #' @param k number of neighbours used in knn, defaults to 10
+#' @param d number of doublets per group combination to simulate, defaults to 10
 #' @param train_cells logical vector specifying which cells to use to train classifier
 #' @param predict_cells logical vector specifying which cells to classify
 #'
@@ -15,18 +16,18 @@
 #' @importFrom methods is
 #'
 #' @examples
-#' sce <- consensus_calls(sce)
+#' sce <- high_conf_calls(sce)
 #' sce <- add_snps(sce = sce, mat = snps, thresh = 0.8)
 #' sce <- reassign(sce = sce, k = 10)
 #'
-reassign <- function(sce, k = 10, train_cells = sce$train, predict_cells = sce$predict) {
+reassign <- function(sce, k = 10,d=10, train_cells = sce$train, predict_cells = sce$predict) {
     #Input checks
     stopifnot("'sce' must be of class SingleCellExperiment"=is(sce,"SingleCellExperiment"))
     stopifnot("k must be greater than or equal to two"=k>1)
     stopifnot("k must be an integer"=k==round(k))
 
     # Singlet training data
-    train <- SingleCellExperiment::counts(SingleCellExperiment::altExp(sce, "SNP"))[, sce$train == TRUE]
+    train <- SingleCellExperiment::counts(SingleCellExperiment::altExp(sce, "SNP"))[, train_cells == TRUE]
     labels <- sce$labels[train_cells == TRUE]
     labels <- droplevels(labels)
 
@@ -45,8 +46,8 @@ reassign <- function(sce, k = 10, train_cells = sce$train, predict_cells = sce$p
         d1 <- train[, labels == l1]
         d2 <- train[, labels == l2]
 
-        s1 <- sample(seq_len(dim(d1)[2]), 10, replace = TRUE)
-        s2 <- sample(seq_len(dim(d2)[2]), 10, replace = TRUE)
+        s1 <- sample(seq_len(dim(d1)[2]), d/2, replace = TRUE)
+        s2 <- sample(seq_len(dim(d2)[2]), d/2, replace = TRUE)
 
         doubs <- d1[, s1] == 1 | d2[, s2] == 1
         doubs <- doubs * 1
@@ -56,16 +57,17 @@ reassign <- function(sce, k = 10, train_cells = sce$train, predict_cells = sce$p
         all <- cbind(all, doubs)
     }
 
-    # dim(all)
-
     train_all <- cbind(train, all)
 
     # prediction data
-    pred <- as.data.frame(SingleCellExperiment::counts(SingleCellExperiment::altExp(sce, "SNP"))[, sce$predict == TRUE])
+    pred <- as.data.frame(SingleCellExperiment::counts(SingleCellExperiment::altExp(sce, "SNP"))[, predict_cells == TRUE])
 
     # knn reclassification
     ID <- class::knn(t(train_all), t(pred), k = k, colnames(train_all))
 
-    sce$knn <- as.factor(ID)
+    sce$knn<-as.character(sce$labels)
+    sce$knn[predict_cells==TRUE] <- as.character(as.factor(ID))
+    sce$knn<-as.factor(sce$knn)
+
     return(sce)
 }

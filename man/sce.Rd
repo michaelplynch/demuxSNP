@@ -17,7 +17,7 @@ n/a for now
 sce
 }
 \description{
-Example SingleCellExperiment object used throughout and built upon in SNPcheck workflow.
+Example SingleCellExperiment object used throughout and built upon in demuxSNP workflow.
 }
 \examples{
 sce <- data(sce)

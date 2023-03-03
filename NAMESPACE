@@ -2,7 +2,7 @@
 
 export(add_snps)
 export(common_genes)
-export(consensus_calls)
+export(high_conf_calls)
 export(reassign)
 export(subset_vcf)
 import(VariantAnnotation)
