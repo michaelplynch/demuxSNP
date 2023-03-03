@@ -58,15 +58,13 @@ Below, we introduce some existing methods, highlight the novel features of our a
 Cells from each group are labelled with a distinct tag (HTO or LMO) which is sequenced to give a counts matrix.
 Due to non-specific binding, these counts form a bimodal distribution.
 Such methods are generally computationally efficient.
-Their classification performance, however, is highly dependent on the tagging quality and many methods do not account for uncertainty in classification (@boggy_bff_2022,
-@stoeckius_cell_2018 &
-@kim_citefuse_2020).
+Their classification performance, however, is highly dependent on the tagging quality and many methods do not account for uncertainty in classification (@boggy_bff_2022, @kim_citefuse_2020 & @stoeckius_cell_2018).
 
 
 More recent methods, including [demuxmix](https://bioconductor.org/packages/release/bioc/html/demuxmix.html), assign a probability that a cell is from a particular group, or made up of multiple groups (doublet). 
 This allows users to define a cut-off threshold for the assignment confidence.
 Accounting for uncertainty is an important feature for these types of algorithms.
-But, while they give the user greater flexibility in determining which cells to keep, this ultimately results in a trade off between keeping cells which cannot be confidently called or discarding them - due to issues with tag staining quality rather than RNA quality.
+But, while they give the user greater flexibility in determining which cells to keep, this ultimately results in a trade-off between keeping cells which cannot be confidently called or discarding them - due to issues with tagging quality rather than RNA quality.
 
 ### SNPs
 
@@ -83,7 +81,7 @@ Demuxlet remains the standard often used to benchmark other methods but its more
 
 **With cell hashing, we can confidently demultiplex *some* but not *all* cells.
 Using these high confidence cells, we can learn the SNPs associated with each group.
-This information can then be used to assign remaining cells (which we could not confidently call using cell hashing) to their most similar group based on their SNP profile.**
+This SNP information can then be used to assign remaining cells (which we could not confidently call using cell hashing) to their most similar group based on their SNP profile.**
 
 Novel features:
 
@@ -99,7 +97,7 @@ Impact:
 * Cells from groups which are present in lower proportions may be classified better than with unsupervised SNP approaches.
 
 Note: the approach used here differs from most SNP methods in that it is supervised. 
-We attain knowledge of which SNPs are associated with which patients then train our classifier around this.
+We attain knowledge of which SNPs are associated with which patients from the high confidence cells then use this to train a classifier.
 It is similar to demuxlet in the sense that the classifier uses group specific SNP information, **however** our method does not require the expense of genotyping and so may be much more widely applicable.
 
 ## Installation
@@ -114,21 +112,27 @@ browseVignettes(package="demuxSNP")
 
 ## Quick Usage
 
+For full list of arguments and explanation of each function, please refer to relevant documentation.
+
+### Workflow
+
 ````{r eval=FALSE}
 # subset common variants file:
-top_genes<-common_genes(sce)
-small_vcf<-subset_vcf(sce,vcf)
+top_genes<-common_genes(sce = sce)
+small_vcf<-subset_vcf(sce = sce, vcf = vcf, ensdb = ensdb)
 
 # create training (high confidence) data
-sce<-high_conf_calls(sce)
+sce<-high_conf_calls(sce = sce,assay="HTO")
+
+## run VarTrix using subsetted .vcf (outside of R)
 
 ## Reassignment
-sce<-add_snps(sce,snps)
-sce<-reassign(sce)
+sce<-add_snps(sce = sce, mat = snps, thresh = 0.8)
+sce<-reassign(sce = sce, k = 10)
 
 ````
 
-## Function Explanation
+### Function Explanation
 
 ````{r eval=FALSE}
 
@@ -141,7 +145,7 @@ These genes are used below to subset the .vcf file.
 
 ````{r eval=FALSE}
 
-new_vcf<-subset_vcf(vcf, top_geens, ensdb)
+new_vcf<-subset_vcf(vcf = vcf, top_geens = top_genes, ensdb = ensdb)
 
 ````
 
@@ -150,15 +154,15 @@ The ranges of the genes are extracted from the EnsDb object.
 
 ````{r eval=FALSE}
 
-sce<-high_conf_calls(sce)
+sce<-high_conf_calls(sce = sce, assay = "HTO")
 
 ````
 
-This function takes a SingleCellExperiment object with HTO altExp, runs [demuxmix](https://bioconductor.org/packages/release/bioc/html/demuxmix.html) and returns a vector of assigned labels.
+This function takes a SingleCellExperiment object with HTO altExp, runs [demuxmix](https://bioconductor.org/packages/release/bioc/html/demuxmix.html) and returns a factor of assigned labels, a logical vector indicating high confidence calls and a logical vector indicating which cells to predict (all).
 
 ````{r eval=FALSE}
 
-sce<-add_snps(sce=sce,mat=snps,thresh = thresh)
+sce<-add_snps(sce=sce,mat=snps,thresh = 0.8)
 
 ````
 
@@ -167,19 +171,24 @@ Additionally, filters out SNPs with no reads in less than 'thresh' proportion of
 
 ````{r eval=FALSE}
 
-sce<-reassign(sce)
+sce<-reassign(sce, 
+              k = 10, 
+              d=10, 
+              train_cells = sce$train, 
+              predict_cells = sce$predict)
 
 ````
 
 Reassignment based on SNP profiles of high confidence cells.
 Singlet training data is based on high confidence singlet assignment.
 Doublets are accounted for by systematically sampling and combining the SNP profiles of n cells pairs from each grouping combination.
+Cells to be used for training data are specified by "train_cells" (logical).
+Cells to be used for prediction are specified by "predict_cells" (logical), this may also include the training data.
 
 
 # Exploratory Analysis
 
-We load three data objects. 
-A SingleCellExperiment object containing RNA and HTO counts, a .vcf file of class CollapsedVCF containing SNPs and a matrix containing SNP information for each cell (we will show you how to generate this SNPs matrix using [VarTrix](https://github.com/10XGenomics/vartrix) outside of R).
+We load three data objects: a SingleCellExperiment object containing RNA and HTO counts, a .vcf file of class CollapsedVCF containing SNPs from 1000 Genomes common variants and a matrix containing SNP information for each cell (we will show you how to generate this SNPs matrix using [VarTrix](https://github.com/10XGenomics/vartrix) outside of R).
 
 ````{r}
 data(sce,vcf,snps,package="demuxSNP")
@@ -208,7 +217,7 @@ plot<-ggarrange(x1, x2, x3, x4, x5, x6, align = "hv", ncol = 3, nrow = 2)
 annotate_figure(plot,top=text_grob("CLR normalised HTO counts",size=12))
 ````
 
-We will begin by running HTODemux, a popular HTO demultiplexing algorithm on the data.
+We will begin by running Seurat's HTODemux, a popular HTO demultiplexing algorithm on the data.
 
 ````{r}
 
@@ -224,7 +233,7 @@ table(sce$seurat)
 
 Here, we see an unusually large number of cells being called as "Negative".
 
-Additionally, the library size of the "Negative" group looks similar to that of other groups, indicating that they may be miscalssified as "Negative" due to their staining quality rather than overall RNA quality.
+Additionally, the library size of the Negative group looks similar to that of other groups, indicating that they may be misclassified as Negative due to their tagging quality rather than overall RNA quality.
 
 
 ````{r}
@@ -232,7 +241,7 @@ seurat$libsize <- colSums(GetAssayData(seurat,slot="counts",assay="RNA"))
 dittoPlot(seurat, "libsize", group.by = "hash.ID")
 ````
 
-For the remainder of this vignette we'll outline our method of checking whether or not these cells have been called correctly and how to assign them to their appropriate group!
+For the remainder of this vignette we will outline our method of checking whether or not these cells have been called correctly and how to assign them to their appropriate group!
 
 # Preprocessing
 
@@ -242,17 +251,17 @@ To reduce computational cost and cell-type effects, we subset our SNPs list to t
 We first find the most commonly expressed genes in our RNA data.
 
 ````{r}
-top_genes <- common_genes(sce = sce)
+top_genes <- common_genes(sce = sce, n=100)
 
 top_genes[1:10]
 
 ````
 
-We have a sample vcf preloaded, but you can load a vcf file in using readVcf()
+We have a sample .vcf preloaded, but you can load your .vcf file in using readVcf() from [VariantAnnotation](https://bioconductor.org/packages/release/bioc/html/VariantAnnotation.html).
 
 ````{r eval=FALSE}
 
-vcf<-readVcf('filepath',genome="GRCh38")
+vcf<-readVcf(file, genome)
 
 ````
 
@@ -270,6 +279,14 @@ new_vcf<-subset_vcf(vcf, top_genes = top_genes,ensdb)
 
 new_vcf
 ````
+The subsetted .vcf can be written as follows, again from [VariantAnnotation](https://bioconductor.org/packages/release/bioc/html/VariantAnnotation.html) package.
+
+````{r eval=FALSE}
+
+writeVcf(new_vcf, 'new_vcf.vcf')
+
+````
+
 
 Next, we wish to identify cells which we can confidently call to a particular group.
 There are a number of ways this can be achieved, including probabilistic modelling of the HTO counts, manually setting non-conservative thresholds or using consensus calls. 
@@ -299,11 +316,12 @@ A sample VarTrix command looks like the following:
 
 ````
 
-Using the output matrix from Vartrix and the high confidenceclassifications from the HTO algorithm, we can reassign cells using k-nearest neighbours.
+Using the output matrix from Vartrix and the high confidence classifications from the HTO algorithm, we can reassign cells using k-nearest neighbours.
 
 # Cell Reassignment, Visualisation and Evaluation
 
 To keep things tidy, we will add the SNP data to our SingleCellExperiment object as an altExp.
+We recode the SNP matrix as follows: 0=no read, 1=SNP present, -1=SNP absent.
 This function also filters out SNPs which are observed at a low frequency in the data, and the frequency threshold can be set manually.
 
 
@@ -318,15 +336,14 @@ altExp(sce, "SNP")
 ````
 
 
+Before we reassign any cells, we will first use the SNPs data to inspect the results from stand-alone algorithms.
 
-Before we reassign any cells, we will first demonstrate visualising of results from stand-alone algorithms.
-
-Splitting the SNP data by Seurat classification, we initially see a large number of 'negative' cells which appear of good quality (high proportion of reads) which may be assignable to another group.
+Splitting the SNP data by Seurat HTODemux classification, we initially see a large number of 'negative' cells which appear of good quality (high proportion of reads) which may be assignable to another group.
 This is consistent with the library size plot we visualised earlier.
 
 
 ````{r}
-test <- Heatmap(counts(altExp(sce, "SNP")), 
+hm <- Heatmap(counts(altExp(sce, "SNP")), 
                 column_split = sce$seurat, 
                 cluster_rows = FALSE, 
                 show_column_names = FALSE, 
@@ -335,21 +352,28 @@ test <- Heatmap(counts(altExp(sce, "SNP")),
                 row_title = "SNPs",
                 col = colors)
 
-draw(test,column_title="SNP profiles split by Seurat Hashtag call",padding = unit(c(2, 15, 2, 2), "mm"))
+draw(hm,
+     column_title="SNP profiles split by Seurat HTODemux call",
+     padding = unit(c(2, 15, 2, 2), "mm"))
 ````
 
-
+We will use our knn method to reassign cells based on their SNP profiles.
+The training data is the high confidence cells
 
 
 ````{r}
-sce <- reassign(sce, k = 5)
+sce <- reassign(sce, 
+                k = 10, 
+                d=10, 
+                train_cells = sce$train, 
+                predict_cells = sce$predict)
 
 table(sce$knn)
 ````
 
 
 ````{r}
-test <- Heatmap(counts(altExp(sce, "SNP")),
+hm <- Heatmap(counts(altExp(sce, "SNP")),
                 column_split = sce$knn, 
                 cluster_rows = FALSE, 
                 show_column_names = FALSE, 
@@ -359,13 +383,15 @@ test <- Heatmap(counts(altExp(sce, "SNP")),
                 row_title = "SNPs", 
                 col = colors)
 
-draw(test,column_title="SNP profiles split by updated knn classification",padding = unit(c(2, 15, 2, 2), "mm"))
+draw(hm,
+     column_title="SNP profiles split by updated knn classification",
+     padding = unit(c(2, 15, 2, 2), "mm"))
 ````
 
-Focusing in on the new Hashtag5 group, we see that a lot of the Negative cells have now been reclassed to this group, as well as a small number of cells from other groups.
+Focusing in on the knn Hashtag5 group, we see that a lot of the Negative cells have now been correctly reclassed to this group, as well as a small number of cells from other groups.
 
 ````{r}
-test <- Heatmap(counts(altExp(sce, "SNP"))[, sce$knn == "Hashtag5"], 
+hm <- Heatmap(counts(altExp(sce, "SNP"))[, sce$knn == "Hashtag5"], 
                 column_split = sce$seurat[sce$knn == "Hashtag5"], 
                 cluster_rows = FALSE, 
                 show_column_names = FALSE, 
@@ -375,19 +401,21 @@ test <- Heatmap(counts(altExp(sce, "SNP"))[, sce$knn == "Hashtag5"],
                 row_title = "SNPs", 
                 col = colors)
 
-draw(test,column_title="knn Hashtag5 group split by original Seurat classification",padding = unit(c(2, 15, 2, 2), "mm"))
+draw(hm,
+     column_title="knn Hashtag5 group split by Seurat HTODemux classification",
+     padding = unit(c(2, 15, 2, 2), "mm"))
 ````
 
 ## Performance
 
 Next we will run some basic performance checks.
-We subset our SingleCellExperiment object to only retain cells which we could confidently call, then split this into a training and test dataset.
+We subset our SingleCellExperiment object to only retain cells which we could confidently call as being from a singlet group, then split this into a training and test dataset.
 
 ````{r}
 
 sce_test<-sce[,sce$train==TRUE]
 sce_test$knn<-NULL
-
+sce_test$labels<-droplevels(sce_test$labels)
 sce_test
 
 sce_test$train2<-rep(FALSE,length(sce_test$train))
@@ -402,12 +430,12 @@ Comparing the predicted labels in the test dataset with the hidden high confiden
 ````{r}
 sce_test<-reassign(sce_test,k=3,train_cells = sce_test$train2,predict_cells = sce_test$test)
 
-table(sce_test$labels,sce_test$knn)
+table(sce_test$labels[sce_test$test==TRUE],sce_test$knn[sce_test$test==TRUE])
 
 ````
 
 
-We can also show that that the model is robust to the presence of misclassified cells in the training data.
+We can also show that that the model can correct misclassified cells when predicted back on the training data.
 We create a new vector "labels2" which is initially identical to the labels used in training previously.
 
 ````{r}
@@ -419,7 +447,7 @@ table(sce_test$labels,sce_test$labels2)
 
 ````
 
-We then randomly reassign 25 cells from Hashtag5 to Hashtag2 in the training data
+We then randomly reassign 25 cells from Hashtag5 to Hashtag2 in the training data.
 Predicting the model back on itself we see that in the new predicted labels, the 25 altered have been correctly reclassified back to Hashtag5
 
 ````{r}
@@ -427,20 +455,22 @@ sce_test$labels2[which(sce_test$labels2=="Hashtag5")[1:25]]<-"Hashtag2"
 
 table(sce_test$labels,sce_test$labels2)
 
-sce_test<-reassign(sce_test,train_cells = sce_test$train, predict_cells = sce_test$train)
+sce_test<-reassign(sce_test,
+                   train_cells = sce_test$train, 
+                   predict_cells = sce_test$train)
 
 table(sce_test$labels,sce_test$knn)
 
 ````
 
-For the knn Hashtag6 group we see mostly good agreement with the original demuxmix labels.
+For the knn Hashtag6 group, we see mostly good agreement with the original demuxmix labels.
 However, it appears one cell now being called a Hashtag6 was originally called Hashtag5.
 Again, we can investigate this by visualising the corresponding SNP profile.
 In doing so, we can see that this most likely is a true Hashtag6.
 
 ````{r}
 
-test <- Heatmap(counts(altExp(sce_test, "SNP"))[, sce_test$knn == "Hashtag6"], 
+hm <- Heatmap(counts(altExp(sce_test, "SNP"))[, sce_test$knn == "Hashtag6"], 
                 column_split = sce_test$labels[sce_test$knn == "Hashtag6"], 
                 cluster_rows = FALSE, 
                 show_column_names = FALSE, 
@@ -450,7 +480,9 @@ test <- Heatmap(counts(altExp(sce_test, "SNP"))[, sce_test$knn == "Hashtag6"],
                 row_title = "SNPs", 
                 col = colors)
 
-draw(test,column_title="knn Hashtag6 group split by demuxmix classification",padding = unit(c(2, 15, 2, 2), "mm"))
+draw(hm,
+     column_title="knn Hashtag6 group split by demuxmix classification",
+     padding = unit(c(2, 15, 2, 2), "mm"))
 
 ````
 
