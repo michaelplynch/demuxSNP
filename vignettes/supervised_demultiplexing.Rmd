@@ -119,10 +119,10 @@ For full list of arguments and explanation of each function, please refer to rel
 ````{r eval=FALSE}
 # subset common variants file:
 top_genes<-common_genes(sce = sce)
-small_vcf<-subset_vcf(sce = sce, vcf = vcf, ensdb = ensdb)
+small_vcf<-subset_vcf(vcf = vcf, top_genes = top_genes, ensdb = ensdb)
 
 # create training (high confidence) data
-sce<-high_conf_calls(sce = sce,assay="HTO")
+sce<-high_conf_calls(sce = sce, assay="HTO")
 
 ## run VarTrix using subsetted .vcf (outside of R)
 

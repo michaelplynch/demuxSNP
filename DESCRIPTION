@@ -1,6 +1,6 @@
 Package: demuxSNP
 Title: Visualising and reassigning cell hashing demultiplexing using SNPs
-Version: 0.2.0
+Version: 0.99.0
 Authors@R: 
     person("Michael", "Lynch", , "michael.lynch@ul.ie", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-9535-6461"))
@@ -28,6 +28,7 @@ Imports:
 Suggests: 
     knitr,
     rmarkdown,
+    BiocStyle,
     Seurat,
     ComplexHeatmap,
     viridisLite,
@@ -39,5 +40,5 @@ Suggests:
     testthat (>= 3.0.0)
 biocViews: Classification, SingleCell
 VignetteBuilder: knitr
-LazyData: true
+LazyData: false
 Config/testthat/edition: 3

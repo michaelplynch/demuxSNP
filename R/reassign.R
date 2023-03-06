@@ -39,7 +39,7 @@ reassign <- function(sce, k = 10,d=10, train_cells = sce$train, predict_cells = 
     combs_joined <- paste0(combs$Var1, combs$Var2)
 
     all <- c()
-    for (i in seq_len(length(combs_joined))) {
+    for (i in seq_along(combs_joined)) {
         l1 <- as.character(combs$Var1[i])
         l2 <- as.character(combs$Var2[i])
 
