@@ -33,7 +33,6 @@ reassign <- function(sce, k = 10, d = 10, train_cells = sce$train, predict_cells
     train <- counts(altExp(sce, "SNP"))[, train_cells == TRUE]
     labels <- sce$labels[train_cells == TRUE]
     labels <- droplevels(labels)
-
     colnames(train) <- labels
 
     # Simulated doublets
@@ -67,10 +66,8 @@ reassign <- function(sce, k = 10, d = 10, train_cells = sce$train, predict_cells
 
     # knn reclassification
     ID <- knn(t(train_all), t(pred), k = k, colnames(train_all))
-
     sce$knn <- as.character(sce$labels)
     sce$knn[predict_cells == TRUE] <- as.character(as.factor(ID))
     sce$knn <- as.factor(sce$knn)
-
     return(sce)
 }
