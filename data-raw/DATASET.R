@@ -1,5 +1,7 @@
 ## code to prepare `DATASET` dataset goes here
-
+library(Matrix)
+library(Seurat)
+library(SingleCellExperiment)
 ##sce object
 
 file_path<-c("C:/Users/michael.lynch/Culhane_Lab Dropbox/Shared_Lab_Folder/broad_datasets/KW9275_Yufei/210827_10X_KW9275_bcl/cellranger-6.1.1/GRCh38/BRI-1348/outs/filtered_feature_bc_matrix")
@@ -12,20 +14,23 @@ seurat <- NormalizeData(seurat) %>% FindVariableFeatures() %>% ScaleData()
 seurat[["HTO"]] <- CreateAssayObject(counts = dat$`Antibody Capture`[1:6,])
 seurat <- NormalizeData(seurat, assay = "HTO", normalization.method = "CLR")  %>% ScaleData()
 
+seurat[["percent.mt"]] <- PercentageFeatureSet(seurat, pattern = "^MT-")
+
+seurat$qual<-rep("pass",each=20700)
+seurat$qual[seurat$percent.mt>10]<-"fail"
+seurat$qual[seurat$nCount_RNA<1000]<-"fail"
+
 sce<-as.SingleCellExperiment(seurat)
 sce$ident<-NULL
 
-keep<-sce$nCount_RNA>1300 & sce$nFeature_RNA>700
+keep<-sce$qual=="pass"
 
 sce<-sce[,keep]
 
-sce_sub<-sce[rowSums(counts(sce)>0)>16000,]
+sce_sub<-sce[rowSums(counts(sce)>0)>14000,]
 
 logcounts(sce_sub)<-NULL
 sce_sub<-sce_sub[,1:2000]
-
-sce_sub
-
 sce<-sce_sub
 usethis::use_data(sce,overwrite = TRUE)
 

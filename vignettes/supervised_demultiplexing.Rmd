@@ -16,7 +16,7 @@ vignette: |
   
 ---
 
-```{r, include = FALSE}
+```{r eval=TRUE, include = FALSE}
 knitr::opts_chunk$set(
     collapse = TRUE,
     comment = "#>",
@@ -28,7 +28,7 @@ knitr::opts_chunk$set(
 
 
 
-```{r }
+```{r message=FALSE}
 
 library(demuxSNP)
 library(ComplexHeatmap)
@@ -104,9 +104,7 @@ It is similar to demuxlet in the sense that the classifier uses group specific S
 
 ````{r eval=FALSE}
 
-devtools::install_github("michaelplynch/demuxSNP", build_vignettes = TRUE)
-
-browseVignettes(package="demuxSNP")
+devtools::install_github("michaelplynch/demuxSNP")
 
 ````
 
@@ -189,6 +187,7 @@ Cells to be used for prediction are specified by "predict_cells" (logical), this
 # Exploratory Analysis
 
 We load three data objects: a SingleCellExperiment object containing RNA and HTO counts, a .vcf file of class CollapsedVCF containing SNPs from 1000 Genomes common variants and a matrix containing SNP information for each cell (we will show you how to generate this SNPs matrix using [VarTrix](https://github.com/10XGenomics/vartrix) outside of R).
+We have already removed low quality cells (library size<1,000 and percentage of genes mapping to mitochondrial genes>10%). 
 
 ````{r}
 data(sce,vcf,snps,package="demuxSNP")
@@ -231,13 +230,10 @@ sce$seurat <- seurat$hash.ID
 table(sce$seurat)
 ````
 
-Here, we see an unusually large number of cells being called as "Negative".
-
-Additionally, the library size of the Negative group looks similar to that of other groups, indicating that they may be misclassified as Negative due to their tagging quality rather than overall RNA quality.
-
+Although HTO library size of the Negative group is low, the RNA library size is similar to that of other groups, indicating that they may be misclassified as Negative due to their tagging quality rather than overall RNA quality.
 
 ````{r}
-
+dittoPlot(seurat, "nCount_HTO", group.by = "hash.ID")
 dittoPlot(seurat, "nCount_RNA", group.by = "hash.ID")
 ````
 
@@ -257,15 +253,15 @@ top_genes[1:10]
 
 ````
 
-We have a sample .vcf preloaded, but you can load your .vcf file in using readVcf() from [VariantAnnotation](https://bioconductor.org/packages/release/bioc/html/VariantAnnotation.html).
+We have a sample .vcf preloaded, but you can load your .vcf file in using 'readVcf()' from [VariantAnnotation](https://bioconductor.org/packages/release/bioc/html/VariantAnnotation.html).
 
-````{r eval=FALSE}
+````{r eval=FALSE, include=FALSE}
 
 vcf<-readVcf(file, genome)
 
 ````
 
-We will subset our .vcf file to SNPs seen in our commonly expressed genes.
+We will subset our .vcf file to SNPs seen in commonly expressed genes from our dataset.
 Notice that the genome for the vcf and EnsDb object must be compatible!
 
 The returned vcf can be written to file and used with VarTrix later on.
@@ -276,12 +272,13 @@ ensdb<-EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86
 seqinfo(vcf)@genome[1]==seqinfo(ensdb)@genome[1]
 
 new_vcf<-subset_vcf(vcf, top_genes = top_genes,ensdb)
-
+vcf
 new_vcf
 ````
-The subsetted .vcf can be written as follows, again from [VariantAnnotation](https://bioconductor.org/packages/release/bioc/html/VariantAnnotation.html) package.
 
-````{r eval=FALSE}
+The subsetted .vcf can be written to disk using 'writeVcf()', again from [VariantAnnotation](https://bioconductor.org/packages/release/bioc/html/VariantAnnotation.html) package.
+
+````{r include=FALSE}
 
 writeVcf(new_vcf, 'new_vcf.vcf')
 
@@ -290,6 +287,7 @@ writeVcf(new_vcf, 'new_vcf.vcf')
 
 Next, we wish to identify cells which we can confidently call to a particular group.
 There are a number of ways this can be achieved, including probabilistic modelling of the HTO counts, manually setting non-conservative thresholds or using consensus calls. 
+The user may wish to experiment with different approaches.
 Here we have used [demuxmix](https://bioconductor.org/packages/release/bioc/html/demuxmix.html), a probabilistic model which we have set with a high acceptance threshold to identify high confidence cell calls to use as training data (cells which we can confidently call as a particular singlet group).
 
 ````{r }
@@ -297,11 +295,13 @@ sce <- high_conf_calls(sce)
 
 table(sce$train)
 
+table(sce$predict)
+
 table(sce$labels)
 ````
 
 So, for this particular dataset, we can confidently call 1,045 cells as being from a particular singlet group.
-608 are most likely singlets which we cannot call to a group with high confidence.
+608 cells cannot be called to a group with high confidence.
 
 # Variant Calling (VarTrix)
 
@@ -350,6 +350,7 @@ hm <- Heatmap(counts(altExp(sce, "SNP")),
                 cluster_column_slices = FALSE, 
                 column_title_rot = -45, 
                 row_title = "SNPs",
+                show_row_names=FALSE,
                 col = colors)
 
 draw(hm,
@@ -381,6 +382,7 @@ hm <- Heatmap(counts(altExp(sce, "SNP")),
                 column_names_rot = 45, 
                 column_title_rot = -45, 
                 row_title = "SNPs", 
+                show_row_names=FALSE,
                 col = colors)
 
 draw(hm,
@@ -399,6 +401,7 @@ hm <- Heatmap(counts(altExp(sce, "SNP"))[, sce$knn == "Hashtag5"],
                 column_names_rot = 45, 
                 column_title_rot = -45, 
                 row_title = "SNPs", 
+                show_row_names=FALSE,
                 col = colors)
 
 draw(hm,
@@ -478,6 +481,7 @@ hm <- Heatmap(counts(altExp(sce_test, "SNP"))[, sce_test$knn == "Hashtag6"],
                 column_names_rot = 45, 
                 column_title_rot = -45, 
                 row_title = "SNPs", 
+                show_row_names=FALSE,
                 col = colors)
 
 draw(hm,

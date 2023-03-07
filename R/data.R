@@ -15,8 +15,7 @@
 #' @format ## `snps`
 #' A matrix with 2,000 cells and 2k odd SNPs
 #' @source n/a for now
-#' @examples data(snps)
-#' dim(snps)
+#' @usage data(snps)
 "snps"
 #'
 #' Sample vcf file
