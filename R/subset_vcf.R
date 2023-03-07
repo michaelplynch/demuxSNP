@@ -11,7 +11,8 @@
 #' @import VariantAnnotation
 #' @importFrom methods is
 #'
-#' @examples top_genes <- common_genes(sce)
+#' @examples data(sce, vcf)
+#' top_genes <- common_genes(sce)
 #' ensdb<-EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86
 #' small_vcf <- subset_vcf(vcf, top_genes,ensdb)
 #'

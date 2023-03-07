@@ -8,7 +8,8 @@
 #'
 #' @importFrom methods is
 #'
-#' @examples sce <- high_conf_calls(sce)
+#' @examples data(sce)
+#' sce <- high_conf_calls(sce)
 #'
 high_conf_calls <- function(sce,assay="HTO") {
     ##Check input

@@ -18,6 +18,7 @@ Updated SingleCellExperiment object with logical vector indicating training data
 Run existing cell hashing algorithms
 }
 \examples{
+data(sce)
 sce <- high_conf_calls(sce)
 
 }

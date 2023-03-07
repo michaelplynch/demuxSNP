@@ -220,8 +220,8 @@ annotate_figure(plot,top=text_grob("CLR normalised HTO counts",size=12))
 We will begin by running Seurat's HTODemux, a popular HTO demultiplexing algorithm on the data.
 
 ````{r}
-
-seurat <- as.Seurat(sce,data=NULL)
+logcounts(sce)<-counts(sce)
+seurat <- as.Seurat(sce)
 seurat <- HTODemux(seurat)
 seurat$hash.ID <- factor(as.character(seurat$hash.ID))
 sce$seurat <- seurat$hash.ID
@@ -237,8 +237,8 @@ Additionally, the library size of the Negative group looks similar to that of ot
 
 
 ````{r}
-seurat$libsize <- colSums(GetAssayData(seurat,slot="counts",assay="RNA"))
-dittoPlot(seurat, "libsize", group.by = "hash.ID")
+
+dittoPlot(seurat, "nCount_RNA", group.by = "hash.ID")
 ````
 
 For the remainder of this vignette we will outline our method of checking whether or not these cells have been called correctly and how to assign them to their appropriate group!

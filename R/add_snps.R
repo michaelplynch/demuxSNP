@@ -9,7 +9,8 @@
 #'
 #' @importFrom methods is
 #'
-#' @examples sce <- add_snps(sce = sce, mat = snps, thresh = 0.8)
+#' @examples data(sce,snps)
+#' sce <- add_snps(sce = sce, mat = snps, thresh = 0.8)
 #'
 add_snps <- function(sce, mat, thresh = 0.8) {
     #Input checks

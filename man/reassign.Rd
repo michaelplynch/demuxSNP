@@ -32,6 +32,7 @@ Training data is intended to be labels of cells confidently called using cell ha
 Prediction data can ban be remaining cells but can also include the training data.
 }
 \examples{
+data(sce, snps)
 sce <- high_conf_calls(sce)
 sce <- add_snps(sce = sce, mat = snps, thresh = 0.8)
 sce <- reassign(sce = sce, k = 10)

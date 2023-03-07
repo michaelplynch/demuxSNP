@@ -28,7 +28,6 @@ Imports:
 Suggests: 
     knitr,
     rmarkdown,
-    BiocStyle,
     Seurat,
     ComplexHeatmap,
     viridisLite,

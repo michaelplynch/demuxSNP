@@ -20,6 +20,7 @@ Updated SingleCellExperiment object
 Add SNPs to SingleCellExperiment object
 }
 \examples{
+data(sce,snps)
 sce <- add_snps(sce = sce, mat = snps, thresh = 0.8)
 
 }

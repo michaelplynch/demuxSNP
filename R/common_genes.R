@@ -13,7 +13,7 @@
 #' @importFrom Matrix rowSums
 #' @importFrom methods is
 #'
-#' @examples
+#' @examples data(sce, package="demuxSNP")
 #' sce <- common_genes(sce)
 #'
 common_genes <- function(sce,n=100) {

@@ -14,12 +14,9 @@ A data frame with 7,240 rows and 60 columns:
 n/a for now
 }
 \usage{
-sce
+data(sce)
 }
 \description{
 Example SingleCellExperiment object used throughout and built upon in demuxSNP workflow.
-}
-\examples{
-sce <- data(sce)
 }
 \keyword{datasets}

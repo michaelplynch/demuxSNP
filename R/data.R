@@ -5,7 +5,7 @@
 #' @format ## `sce`
 #' A data frame with 7,240 rows and 60 columns:
 #' @source n/a for now
-#' @examples sce <- data(sce)
+#' @usage  data(sce)
 "sce"
 #'
 #' Sample VarTrix output
@@ -15,7 +15,8 @@
 #' @format ## `snps`
 #' A matrix with 2,000 cells and 2k odd SNPs
 #' @source n/a for now
-#' @examples dim(snps)
+#' @examples data(snps)
+#' dim(snps)
 "snps"
 #'
 #' Sample vcf file

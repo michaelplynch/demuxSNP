@@ -15,7 +15,7 @@
 #'
 #' @importFrom methods is
 #'
-#' @examples
+#' @examples data(sce, snps)
 #' sce <- high_conf_calls(sce)
 #' sce <- add_snps(sce = sce, mat = snps, thresh = 0.8)
 #' sce <- reassign(sce = sce, k = 10)

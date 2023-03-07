@@ -19,6 +19,7 @@ Returns a character vector of the top n most frequently expressed genes from the
 Expression is based on having a count > 0 in a given cell.
 }
 \examples{
+data(sce, package="demuxSNP")
 sce <- common_genes(sce)
 
 }
