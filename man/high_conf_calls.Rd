@@ -2,20 +2,20 @@
 % Please edit documentation in R/high_conf_calls.R
 \name{high_conf_calls}
 \alias{high_conf_calls}
-\title{Run existing cell hashing algorithms}
+\title{Run demuxmix to determine high-confidence calls}
 \usage{
 high_conf_calls(sce, assay = "HTO")
 }
 \arguments{
-\item{sce}{Object of class SingleCellExperiment with HTO altExp assay}
+\item{sce}{Object of class SingleCellExperiment with HTO (or similar) altExp assay}
 
-\item{assay}{Name of altExp for cell hashing counts to be retrieve from}
+\item{assay}{Name of altExp for cell hashing counts to be retrieved from}
 }
 \value{
-Updated SingleCellExperiment object with logical vector indicating training data, data to be classified (complement of training data) and labels.
+Updated SingleCellExperiment object with logical vector indicating training data, data to be classified (all cells) and assigned labels for all cells.
 }
 \description{
-Run existing cell hashing algorithms
+Run demuxmix to determine high-confidence calls
 }
 \examples{
 data(sce)

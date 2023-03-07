@@ -11,10 +11,10 @@ A vcf file containing x variants.
 }
 }
 \source{
-\url{https://www.who.int/teams/global-tuberculosis-programme/data}
+https://cellsnp-lite.readthedocs.io/en/latest/snp_list.html
 }
 \usage{
-vcf
+data(vcf)
 }
 \description{
 A subset of the 1k Genomes common variants HG38 vcf file.

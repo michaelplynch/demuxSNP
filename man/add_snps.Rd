@@ -14,13 +14,13 @@ add_snps(sce, mat, thresh = 0.8)
 \item{thresh}{threshold presence of SNP, defaults to 0.8}
 }
 \value{
-Updated SingleCellExperiment object
+Updated SingleCellExperiment object with snps in altExp slot
 }
 \description{
 Add SNPs to SingleCellExperiment object
 }
 \examples{
-data(sce,snps)
+data(sce, snps)
 sce <- add_snps(sce = sce, mat = snps, thresh = 0.8)
 
 }

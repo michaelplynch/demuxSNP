@@ -1,5 +1,5 @@
 Package: demuxSNP
-Title: Visualising and reassigning cell hashing demultiplexing using SNPs
+Title: scRNAseq demultiplexing using cell hashing and SNPs
 Version: 0.99.0
 Authors@R: 
     person("Michael", "Lynch", , "michael.lynch@ul.ie", role = c("aut", "cre"),

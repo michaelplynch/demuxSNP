@@ -22,7 +22,7 @@ Subset common variants vcf file to only SNPs seen in 'top_genes'
 \examples{
 data(sce, vcf)
 top_genes <- common_genes(sce)
-ensdb<-EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86
-small_vcf <- subset_vcf(vcf, top_genes,ensdb)
+ensdb <- EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86
+small_vcf <- subset_vcf(vcf, top_genes, ensdb)
 
 }

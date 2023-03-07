@@ -10,31 +10,33 @@
 #' @import ensembldb
 #' @import VariantAnnotation
 #' @importFrom methods is
+#' @importFrom SummarizedExperiment rowRanges
+#' @import GenomeInfoDb
 #'
 #' @examples data(sce, vcf)
 #' top_genes <- common_genes(sce)
-#' ensdb<-EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86
-#' small_vcf <- subset_vcf(vcf, top_genes,ensdb)
+#' ensdb <- EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86
+#' small_vcf <- subset_vcf(vcf, top_genes, ensdb)
 #'
 subset_vcf <- function(vcf, top_genes, ensdb) {
-    #Input checks
-    stopifnot("'vcf' must be of class CollapsedVCF"=is(vcf,"CollapsedVCF"))
-    stopifnot("'top_genes' must be of class character"=is(top_genes,"character"))
-    stopifnot("'ensdb' must be of class EnsDb"=is(ensdb,"EnsDb"))
-    stopifnot("Are your SNPs and ensdb object from the same genome build?"=seqinfo(vcf)@genome[1]==seqinfo(ensdb)@genome[1])
+    # Input checks
+    stopifnot("'vcf' must be of class CollapsedVCF" = is(vcf, "CollapsedVCF"))
+    stopifnot("'top_genes' must be of class character" = is(top_genes, "character"))
+    stopifnot("'ensdb' must be of class EnsDb" = is(ensdb, "EnsDb"))
+    stopifnot("Are your SNPs and ensdb object from the same genome build?" = genome(vcf)[1] == genome(ensdb)[1])
 
-    #calculating row ranges of SNPs, genes, then subsetting vcf by gene ranges
-    SNP_ranges <- SummarizedExperiment::rowRanges(vcf)
+    # calculating row ranges of SNPs, genes, then subsetting vcf by gene ranges
+    SNP_ranges <- rowRanges(vcf)
 
-    vcf_inbound <- vcf[BiocGenerics::end(SNP_ranges) <= GenomeInfoDb::seqlengths(SNP_ranges)[as.character(GenomeInfoDb::seqnames(SNP_ranges))]]
-    SNP_ranges_inbound <- SummarizedExperiment::rowRanges(vcf_inbound)
+    vcf_inbound <- vcf[BiocGenerics::end(SNP_ranges) <= seqlengths(SNP_ranges)[as.character(seqnames(SNP_ranges))]]
+    SNP_ranges_inbound <- rowRanges(vcf_inbound)
 
     gns <- ensembldb::genes(ensdb)
 
     top_gene_ranges <- gns[gns$gene_name %in% top_genes]
 
-    GenomeInfoDb::seqlengths(SNP_ranges_inbound) <- NA
-    GenomeInfoDb::seqlengths(top_gene_ranges) <- NA
+    seqlengths(SNP_ranges_inbound) <- NA
+    seqlengths(top_gene_ranges) <- NA
 
     top_genes_vcf <- vcf_inbound[IRanges::overlapsAny(SNP_ranges_inbound, top_gene_ranges, type = "within")]
 
