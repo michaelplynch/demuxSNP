@@ -11,7 +11,7 @@ A data frame with 7,240 rows and 60 columns:
 }
 }
 \source{
-n/a for now
+n/a
 }
 \usage{
 data(sce)

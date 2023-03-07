@@ -24,12 +24,13 @@ reassign(
 \item{predict_cells}{logical vector specifying which cells to classify}
 }
 \value{
-A SingleCellExperiment with updated group assignments in "knn" metadata
+A SingleCellExperiment with updated group assignments called 'knn'
 }
 \description{
 k-nearest neighbour classification of cells.
-Training data is intended to be labels of cells confidently called using cell hashing based methods and their correspodning SNPs.
-Prediction data can ban be remaining cells but can also include the training data.
+Training data is intended to be labels of cells confidently called using cell hashing based methods and their corresponding SNPs.
+Prediction data can be remaining cells but can also include the training data.
+Doublets are simulated by randomly combining 'd' SNP profiles from each grouping combination.
 }
 \examples{
 data(sce, snps)

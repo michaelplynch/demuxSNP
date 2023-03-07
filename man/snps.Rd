@@ -11,16 +11,12 @@ A matrix with 2,000 cells and 2k odd SNPs
 }
 }
 \source{
-n/a for now
+n/a
 }
 \usage{
-snps
+data(snps)
 }
 \description{
 A sample output from VarTrix corresponding to the sce SingleCellExperiment object.
-}
-\examples{
-data(snps)
-dim(snps)
 }
 \keyword{datasets}

@@ -7,7 +7,7 @@
 common_genes(sce, n = 100)
 }
 \arguments{
-\item{sce}{A SingleCellExperiment object}
+\item{sce}{a SingleCellExperiment object}
 
 \item{n}{number of genes to be returned. Defaults to n=100.}
 }
@@ -19,7 +19,7 @@ Returns a character vector of the top n most frequently expressed genes from the
 Expression is based on having a count > 0 in a given cell.
 }
 \examples{
-data(sce, package="demuxSNP")
+data(sce, package = "demuxSNP")
 sce <- common_genes(sce)
 
 }
