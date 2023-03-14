@@ -240,9 +240,6 @@ top_genes[1:10]
 
 We have a sample .vcf preloaded, but you can load your .vcf file in using 'readVcf()' from [VariantAnnotation](https://bioconductor.org/packages/release/bioc/html/VariantAnnotation.html).
 
-````{r eval=FALSE, include=FALSE}
-vcf <- readVcf(file, genome)
-````
 
 We will subset our .vcf file to SNPs seen in commonly expressed genes from our dataset.
 Notice that the genome for the vcf and EnsDb object must be compatible!
@@ -260,10 +257,6 @@ new_vcf
 ````
 
 The subsetted .vcf can be written to disk using 'writeVcf()', again from [VariantAnnotation](https://bioconductor.org/packages/release/bioc/html/VariantAnnotation.html) package.
-
-````{r include=FALSE}
-writeVcf(new_vcf, "new_vcf.vcf")
-````
 
 
 Next, we wish to identify cells which we can confidently call to a particular group.
