@@ -1,6 +1,6 @@
 Package: demuxSNP
 Title: scRNAseq demultiplexing using cell hashing and SNPs
-Version: 0.99.0
+Version: 0.99.1
 Authors@R: c(
     person("Michael", "Lynch", 
       email = "michael.lynch@ul.ie", 
@@ -19,7 +19,7 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Depends: 
-    R (>= 4.2.0),
+    R (>= 4.3.0),
     SingleCellExperiment,
     VariantAnnotation,
     ensembldb
