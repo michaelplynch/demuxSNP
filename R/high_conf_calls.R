@@ -7,7 +7,7 @@
 #' @export
 #'
 #' @importFrom methods is
-#' @importFrom BiocGenerics colSums
+#' @importFrom MatrixGenerics colSums
 #' @import demuxmix
 #' @import SingleCellExperiment
 #'

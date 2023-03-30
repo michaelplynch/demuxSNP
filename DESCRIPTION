@@ -24,7 +24,7 @@ Depends:
     VariantAnnotation,
     ensembldb
 Imports: 
-    BiocGenerics,
+    MatrixGenerics,
     class,
     GenomeInfoDb,
     IRanges,
