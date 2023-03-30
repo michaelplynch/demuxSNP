@@ -1,6 +1,6 @@
 Package: demuxSNP
 Title: scRNAseq demultiplexing using cell hashing and SNPs
-Version: 0.99.3
+Version: 0.99.4
 Authors@R: c(
     person("Michael", "Lynch", 
       email = "michael.lynch@ul.ie", 
