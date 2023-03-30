@@ -101,7 +101,14 @@ It is similar to demuxlet in the sense that the classifier uses group specific S
 ## Installation
 
 ````{r eval=FALSE}
+
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("demuxSNP")
+## or
 devtools::install_github("michaelplynch/demuxSNP")
+
 ````
 
 ## Quick Usage
@@ -337,6 +344,7 @@ The training data is the high confidence cells
 
 
 ````{r}
+set.seed(1)
 sce <- reassign(sce,
     k = 10,
     d = 10,
