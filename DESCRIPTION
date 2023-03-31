@@ -25,6 +25,7 @@ Depends:
     ensembldb
 Imports: 
     MatrixGenerics,
+    BiocGenerics,
     class,
     GenomeInfoDb,
     IRanges,
