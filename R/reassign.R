@@ -16,6 +16,7 @@
 #'
 #' @importFrom methods is
 #' @importFrom class knn
+#' @importFrom combinat combn
 #' @import SingleCellExperiment
 #'
 #' @examples data(sce, snps)
@@ -38,9 +39,10 @@ reassign <- function(sce, k = 10, d = 10, train_cells = sce$train, predict_cells
     # Simulated doublets
     combs <- expand.grid(levels(labels), levels(labels))
     combs <- combs[combs$Var1 != combs$Var2, ]
-    combs_joined <- paste0(combs$Var1, combs$Var2)
+    p<-combn(unique(combs$Var1),2)
+    combs_joined <- paste(p[1,],p[2,])
 
-    all <- c()
+    all <- matrix(data=NA,nrow=dim(altExp(sce,"SNP"))[1],ncol=d*length(combs_joined))
     for (i in seq_along(combs_joined)) {
         l1 <- as.character(combs$Var1[i])
         l2 <- as.character(combs$Var2[i])
@@ -48,15 +50,15 @@ reassign <- function(sce, k = 10, d = 10, train_cells = sce$train, predict_cells
         d1 <- train[, labels == l1]
         d2 <- train[, labels == l2]
 
-        s1 <- sample(seq_len(dim(d1)[2]), d / 2, replace = TRUE)
-        s2 <- sample(seq_len(dim(d2)[2]), d / 2, replace = TRUE)
+        s1 <- sample(seq_len(dim(d1)[2]), d , replace = TRUE)
+        s2 <- sample(seq_len(dim(d2)[2]), d , replace = TRUE)
 
         doubs <- d1[, s1] == 1 | d2[, s2] == 1
         doubs <- doubs * 1
         doubs[doubs == 0] <- c(-1)
-        colnames(doubs) <- rep("Doublet", length(colnames(doubs)))
 
-        all <- cbind(all, doubs)
+        all[,c(1+(i-1)*d):c(d+(i-1)*d)]<-doubs
+        colnames(all)<-rep("Doublet",dim(all)[2])
     }
 
     train_all <- cbind(train, all)
