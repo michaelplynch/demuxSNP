@@ -1,7 +1,8 @@
 #' Add SNPs to SingleCellExperiment object
 #'
 #' @param sce object of class SingleCellExperiment
-#' @param mat object of class matrix, output from VarTrix
+#' @param mat object of class matrix, output from VarTrix in 'consensus' mode 
+#' (default)
 #' @param thresh threshold presence of SNP, defaults to 0.8
 #'
 #' @return Updated SingleCellExperiment object with snps in altExp slot
@@ -18,7 +19,7 @@ add_snps <- function(sce, mat, thresh = 0.8) {
     stopifnot("'sce' must be of class SingleCellExperiment" = is(sce, "SingleCellExperiment"))
     stopifnot("thresh must be between 0 and 1" = thresh < 1 & thresh > 0)
     stopifnot("SingleCellExperiment and snps matrix contain unequal number of cells" = dim(counts(sce))[2] == dim(mat)[2])
-    stopifnot("Did you run VarTrix in the correct mode?" = identical(mat, round(mat)))
+    stopifnot("Did you run VarTrix in the default 'consensus' mode?" = identical(mat, round(mat)))
 
     # Add snps to sce
     mat_obs <- mat[(rowSums(mat > 0) / dim(mat)[2]) > thresh, ]
