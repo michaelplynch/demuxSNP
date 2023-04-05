@@ -7,16 +7,14 @@
 \format{
 \subsection{\code{snps}}{
 
-A matrix with 2,000 cells and 2k odd SNPs
+An object of class matrix
 }
-}
-\source{
-n/a
 }
 \usage{
 data(snps)
 }
 \description{
-A sample output from VarTrix corresponding to the sce SingleCellExperiment object.
+A sample output from VarTrix corresponding to the sce SingleCellExperiment
+objec for a subset of SNPs located in well observed genes.
 }
 \keyword{datasets}

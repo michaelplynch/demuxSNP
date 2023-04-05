@@ -3,20 +3,19 @@
 \docType{data}
 \name{sce}
 \alias{sce}
-\title{SingleCellExperiment object containing RNA and HTO data}
+\title{SingleCellExperiment object containing multiplexed RNA and HTO data from
+six biological smamples}
 \format{
 \subsection{\code{sce}}{
 
-A data frame with 7,240 rows and 60 columns:
+An object of class SingleCellExperiment
 }
-}
-\source{
-n/a
 }
 \usage{
 data(sce)
 }
 \description{
-Example SingleCellExperiment object used throughout and built upon in demuxSNP workflow.
+Example SingleCellExperiment object containing demultiplexed scRNAseq data
+from six donors, used throughout and built upon in demuxSNP workflow.
 }
 \keyword{datasets}

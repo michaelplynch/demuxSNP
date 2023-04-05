@@ -7,7 +7,7 @@
 \format{
 \subsection{\code{vcf}}{
 
-A vcf file containing x variants.
+An object of class CollapsedVcf
 }
 }
 \source{
@@ -17,6 +17,7 @@ https://cellsnp-lite.readthedocs.io/en/latest/snp_list.html
 data(vcf)
 }
 \description{
-A subset of the 1k Genomes common variants HG38 vcf file.
+VCF file containing SNPs from a subset of the 1k Genomes common variants
+HG38 genome build.
 }
 \keyword{datasets}
