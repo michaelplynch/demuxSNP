@@ -11,6 +11,8 @@
 #' @import VariantAnnotation
 #' @importFrom methods is
 #' @importFrom SummarizedExperiment rowRanges
+#' @importFrom BiocGenerics end
+#' @importFrom IRanges overlapsAny
 #' @import GenomeInfoDb
 #'
 #' @examples data(sce, vcf)
@@ -28,7 +30,7 @@ subset_vcf <- function(vcf, top_genes, ensdb) {
     # calculating row ranges of SNPs, genes, then subsetting vcf by gene ranges
     SNP_ranges <- rowRanges(vcf)
 
-    vcf_inbound <- vcf[BiocGenerics::end(SNP_ranges) <= seqlengths(SNP_ranges)[as.character(seqnames(SNP_ranges))]]
+    vcf_inbound <- vcf[end(SNP_ranges) <= seqlengths(SNP_ranges)[as.character(seqnames(SNP_ranges))]]
     SNP_ranges_inbound <- rowRanges(vcf_inbound)
 
     gns <- ensembldb::genes(ensdb)
@@ -38,7 +40,7 @@ subset_vcf <- function(vcf, top_genes, ensdb) {
     seqlengths(SNP_ranges_inbound) <- NA
     seqlengths(top_gene_ranges) <- NA
 
-    top_genes_vcf <- vcf_inbound[IRanges::overlapsAny(SNP_ranges_inbound, top_gene_ranges, type = "within")]
+    top_genes_vcf <- vcf_inbound[overlapsAny(SNP_ranges_inbound, top_gene_ranges, type = "within")]
 
     return(top_genes_vcf)
 }

@@ -19,7 +19,8 @@ reassign(
 
 \item{d}{number of doublets per group combination to simulate, defaults to 10}
 
-\item{train_cells}{logical vector specifying which cells to use to train classifier}
+\item{train_cells}{logical vector specifying which cells to use to train
+classifier}
 
 \item{predict_cells}{logical vector specifying which cells to classify}
 }
@@ -28,9 +29,12 @@ A SingleCellExperiment with updated group assignments called 'knn'
 }
 \description{
 k-nearest neighbour classification of cells.
-Training data is intended to be labels of cells confidently called using cell hashing based methods and their corresponding SNPs.
-Prediction data can be remaining cells but can also include the training data.
-Doublets are simulated by randomly combining 'd' SNP profiles from each grouping combination.
+Training data is intended to be labels of cells confidently called using
+cell hashing based methods and their corresponding SNPs.
+Prediction data can be remaining cells but can also include the training
+data.
+Doublets are simulated by randomly combining 'd' SNP profiles from each
+grouping combination.
 }
 \examples{
 data(sce, snps)

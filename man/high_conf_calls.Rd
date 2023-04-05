@@ -7,12 +7,15 @@
 high_conf_calls(sce, assay = "HTO")
 }
 \arguments{
-\item{sce}{Object of class SingleCellExperiment with HTO (or similar) altExp assay}
+\item{sce}{Object of class SingleCellExperiment with HTO (or similar) altExp
+assay}
 
 \item{assay}{Name of altExp for cell hashing counts to be retrieved from}
 }
 \value{
-Updated SingleCellExperiment object with logical vector indicating training data, data to be classified (all cells) and assigned labels for all cells.
+Updated SingleCellExperiment object with logical vector indicating
+training data, data to be classified (all cells) and assigned labels for all
+cells.
 }
 \description{
 Run demuxmix to determine high-confidence calls

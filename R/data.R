@@ -1,29 +1,31 @@
-#' SingleCellExperiment object containing RNA and HTO data
+#' SingleCellExperiment object containing multiplexed RNA and HTO data from
+#' six biological smamples
 #'
-#' Example SingleCellExperiment object used throughout and built upon in demuxSNP workflow.
+#' Example SingleCellExperiment object containing demultiplexed scRNAseq data 
+#' from six donors, used throughout and built upon in demuxSNP workflow.
 #'
 #' @format ## `sce`
-#' A data frame with 7,240 rows and 60 columns:
-#' @source n/a
+#' An object of class SingleCellExperiment
 #' @usage  data(sce)
 "sce"
 #'
 #' Sample VarTrix output
 #'
-#' A sample output from VarTrix corresponding to the sce SingleCellExperiment object.
+#' A sample output from VarTrix corresponding to the sce SingleCellExperiment 
+#' objec for a subset of SNPs located in well observed genes.
 #'
 #' @format ## `snps`
-#' A matrix with 2,000 cells and 2k odd SNPs
-#' @source n/a
+#' An object of class matrix
 #' @usage data(snps)
 "snps"
 #'
 #' Sample vcf file
 #'
-#' A subset of the 1k Genomes common variants HG38 vcf file.
+#' VCF file containing SNPs from a subset of the 1k Genomes common variants 
+#' HG38 genome build.
 #'
 #' @format ## `vcf`
-#' A vcf file containing x variants.
+#' An object of class CollapsedVcf
 #' @source https://cellsnp-lite.readthedocs.io/en/latest/snp_list.html
 #' @usage data(vcf)
 "vcf"

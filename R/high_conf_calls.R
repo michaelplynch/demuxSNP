@@ -1,13 +1,16 @@
 #' Run demuxmix to determine high-confidence calls
 #'
-#' @param sce Object of class SingleCellExperiment with HTO (or similar) altExp assay
+#' @param sce Object of class SingleCellExperiment with HTO (or similar) altExp
+#'  assay
 #' @param assay Name of altExp for cell hashing counts to be retrieved from
 #'
-#' @return Updated SingleCellExperiment object with logical vector indicating training data, data to be classified (all cells) and assigned labels for all cells.
+#' @return Updated SingleCellExperiment object with logical vector indicating 
+#' training data, data to be classified (all cells) and assigned labels for all 
+#' cells.
 #' @export
 #'
 #' @importFrom methods is
-#' @importFrom BiocGenerics colSums
+#' @importFrom MatrixGenerics colSums
 #' @import demuxmix
 #' @import SingleCellExperiment
 #'
