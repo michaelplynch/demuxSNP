@@ -5,16 +5,19 @@
 \alias{vcf}
 \title{Sample vcf file}
 \format{
-\subsection{\code{vcf}}{
-
-An object of class CollapsedVcf
-}
+An object of class \code{CollapsedVCF} with 2609 rows and 0 columns.
 }
 \source{
 https://cellsnp-lite.readthedocs.io/en/latest/snp_list.html
 }
 \usage{
 data(vcf)
+}
+\value{
+\subsection{\code{vcf}}{
+
+An object of class CollapsedVcf
+}
 }
 \description{
 VCF file containing SNPs from a subset of the 1k Genomes common variants

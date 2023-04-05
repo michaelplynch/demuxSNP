@@ -28,11 +28,7 @@
 #' sce <- add_snps(sce = sce, mat = snps, thresh = 0.8)
 #' sce <- reassign(sce = sce, k = 10)
 #'
-reassign <- function(sce, 
-                     k = 10, 
-                     d = 10, 
-                     train_cells = sce$train, 
-                     predict_cells = sce$predict) {
+reassign <- function(sce, k = 10, d = 10, train_cells = sce$train, predict_cells = sce$predict) {
     # Input checks
     stopifnot("'sce' must be of class SingleCellExperiment" = is(sce, "SingleCellExperiment"))
     stopifnot("k must be greater than or equal to two" = k > 1)

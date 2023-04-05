@@ -6,13 +6,16 @@
 \title{SingleCellExperiment object containing multiplexed RNA and HTO data from
 six biological smamples}
 \format{
+An object of class \code{SingleCellExperiment} with 259 rows and 2000 columns.
+}
+\usage{
+data(sce)
+}
+\value{
 \subsection{\code{sce}}{
 
 An object of class SingleCellExperiment
 }
-}
-\usage{
-data(sce)
 }
 \description{
 Example SingleCellExperiment object containing demultiplexed scRNAseq data

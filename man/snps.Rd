@@ -5,13 +5,16 @@
 \alias{snps}
 \title{Sample VarTrix output}
 \format{
+An object of class \code{matrix} (inherits from \code{array}) with 2542 rows and 2000 columns.
+}
+\usage{
+data(snps)
+}
+\value{
 \subsection{\code{snps}}{
 
 An object of class matrix
 }
-}
-\usage{
-data(snps)
 }
 \description{
 A sample output from VarTrix corresponding to the sce SingleCellExperiment
