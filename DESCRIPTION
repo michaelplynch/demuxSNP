@@ -14,12 +14,14 @@ Description: This package assists in demultiplexing scRNAseq data using both cel
   The SNP profile of each group os learned using high confidence assignments from the cell hashing data.
   Cells which cannot be assigned with high confidence from the cell hashing data are assigned to their most similar group based on their SNPs.
   We also provide some helper function to optimise SNP selection, create training data and merge SNP data into the SingleCellExperiment framework.  
+URL: https://github.com/michaelplynch/demuxSNP
+BugReports: https://github.com/michaelplynch/demuxSNP/issues
 License: GPL-3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Depends: 
-    R (>= 4.3.0),
+    R (>= 4.2.0),
     SingleCellExperiment,
     VariantAnnotation,
     ensembldb
