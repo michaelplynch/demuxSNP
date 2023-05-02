@@ -25,7 +25,9 @@
 #'
 #' @examples data(multiplexed_scrnaseq_sce, vartrix_consensus_snps)
 #' multiplexed_scrnaseq_sce <- high_conf_calls(multiplexed_scrnaseq_sce)
-#' multiplexed_scrnaseq_sce <- add_snps(sce = multiplexed_scrnaseq_sce, mat = vartrix_consensus_snps, thresh = 0.8)
+#' multiplexed_scrnaseq_sce <- add_snps(sce = multiplexed_scrnaseq_sce, 
+#' mat = vartrix_consensus_snps, 
+#' thresh = 0.8)
 #' multiplexed_scrnaseq_sce <- reassign(sce = multiplexed_scrnaseq_sce, k = 10)
 #'
 reassign <- function(sce, k = 10, d = 10, train_cells = sce$train, predict_cells = sce$predict) {
