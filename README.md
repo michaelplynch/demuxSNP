@@ -26,8 +26,8 @@ which is sequenced to give a counts matrix. Due to non-specific binding,
 these counts form a bimodal distribution. Such methods are generally
 computationally efficient. Their classification performance, however, is
 highly dependent on the tagging quality and many methods do not account
-for uncertainty in classification (@boggy_bff_2022, @kim_citefuse_2020 &
-@stoeckius_cell_2018).
+for uncertainty in classification (Boggy et al. (2022), Kim et al.
+(2020) & Stoeckius et al. (2018)).
 
 More recent methods, including
 [demuxmix](https://bioconductor.org/packages/release/bioc/html/demuxmix.html),
@@ -44,11 +44,11 @@ quality rather than RNA quality.
 
 The second class of methods exploits natural genetic variation between
 cells and so can only be used where the groups are genetically distinct.
-Demuxlet (@kang_multiplexed_2018) uses genotype information from each
-group to classify samples. This genotyping incurs additional
-experimental cost. To address this, Souporcell (@heaton_souporcell_2020)
-and Vireo (@huang_vireo_2019) among other methods were developed to
-classify cells based on their SNPs in an unsupervised manner. Without
+Demuxlet (Kang et al. (2018)) uses genotype information from each group
+to classify samples. This genotyping incurs additional experimental
+cost. To address this, Souporcell (Heaton et al. (2020)) and Vireo
+(Huang, McCarthy, and Stegle (2019)) among other methods were developed
+to classify cells based on their SNPs in an unsupervised manner. Without
 prior knowledge of the SNPs associated with each group, these
 unsupervised methods may confuse groups with lower cell counts for other
 signals in the data.
@@ -145,7 +145,7 @@ small_sce<-reassign(small_sce,k=5)
 table(small_sce$knn)
 #> 
 #>  Doublet Hashtag1 Hashtag3 Hashtag4 Hashtag5 Hashtag6 
-#>       21       10       17        7       13       32
+#>       22       10       16        7       13       32
 ```
 
 ## Example
@@ -597,3 +597,65 @@ draw(hm,
 <img src="man/figures/README-unnamed-chunk-23-1.png" width="100%" />
 
 # References
+
+<div id="refs" class="references csl-bib-body hanging-indent">
+
+<div id="ref-boggy_bff_2022" class="csl-entry">
+
+Boggy, Gregory J, G W McElfresh, Eisa Mahyari, Abigail B Ventura, Scott
+G Hansen, Louis J Picker, and Benjamin N Bimber. 2022. “BFF and <span
+class="nocase">cellhashR</span>: Analysis Tools for Accurate
+Demultiplexing of Cell Hashing Data.” *Bioinformatics* 38 (10):
+2791–801. <https://doi.org/10.1093/bioinformatics/btac213>.
+
+</div>
+
+<div id="ref-heaton_souporcell_2020" class="csl-entry">
+
+Heaton, Haynes, Arthur M. Talman, Andrew Knights, Maria Imaz, Daniel J.
+Gaffney, Richard Durbin, Martin Hemberg, and Mara K. N. Lawniczak. 2020.
+“Souporcell: Robust Clustering of Single-Cell RNA-Seq Data by Genotype
+Without Reference Genotypes.” *Nature Methods* 17 (6): 615–20.
+<https://doi.org/10.1038/s41592-020-0820-1>.
+
+</div>
+
+<div id="ref-huang_vireo_2019" class="csl-entry">
+
+Huang, Yuanhua, Davis J. McCarthy, and Oliver Stegle. 2019. “Vireo:
+Bayesian Demultiplexing of Pooled Single-Cell RNA-Seq Data Without
+Genotype Reference.” *Genome Biology* 20 (1): 273.
+<https://doi.org/10.1186/s13059-019-1865-2>.
+
+</div>
+
+<div id="ref-kang_multiplexed_2018" class="csl-entry">
+
+Kang, Hyun Min, Meena Subramaniam, Sasha Targ, Michelle Nguyen, Lenka
+Maliskova, Elizabeth McCarthy, Eunice Wan, et al. 2018. “Multiplexed
+Droplet Single-Cell RNA-Sequencing Using Natural Genetic Variation.”
+*Nature Biotechnology* 36 (1): 89–94.
+<https://doi.org/10.1038/nbt.4042>.
+
+</div>
+
+<div id="ref-kim_citefuse_2020" class="csl-entry">
+
+Kim, Hani Jieun, Yingxin Lin, Thomas A Geddes, Jean Yee Hwa Yang, and
+Pengyi Yang. 2020. “CiteFuse Enables Multi-Modal Analysis of CITE-Seq
+Data.” *Bioinformatics* 36 (14): 4137–43.
+<https://doi.org/10.1093/bioinformatics/btaa282>.
+
+</div>
+
+<div id="ref-stoeckius_cell_2018" class="csl-entry">
+
+Stoeckius, Marlon, Shiwei Zheng, Brian Houck-Loomis, Stephanie Hao,
+Bertrand Z. Yeung, William M. Mauck, Peter Smibert, and Rahul Satija.
+2018. “Cell Hashing with Barcoded Antibodies Enables Multiplexing and
+Doublet Detection for Single Cell Genomics.” *Genome Biology* 19 (1):
+224. <https://doi.org/10.1186/s13059-018-1603-1>.
+
+</div>
+
+</div>
