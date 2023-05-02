@@ -15,8 +15,8 @@
 #' @importFrom Matrix rowSums
 #' @importFrom methods is
 #'
-#' @examples data(sce, package = "demuxSNP")
-#' sce <- common_genes(sce)
+#' @examples data(multiplexed_scrnaseq_sce)
+#' multiplexed_scrnaseq_sce <- common_genes(multiplexed_scrnaseq_sce)
 #'
 common_genes <- function(sce, n = 100) {
     # Input checks

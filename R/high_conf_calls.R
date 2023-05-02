@@ -14,8 +14,8 @@
 #' @import demuxmix
 #' @import SingleCellExperiment
 #'
-#' @examples data(sce)
-#' sce <- high_conf_calls(sce)
+#' @examples data(multiplexed_scrnaseq_sce)
+#' multiplexed_scrnaseq_sce <- high_conf_calls(multiplexed_scrnaseq_sce)
 #'
 high_conf_calls <- function(sce, assay = "HTO") {
     ## Check input

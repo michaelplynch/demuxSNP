@@ -21,7 +21,7 @@ expressed genes from the counts of the SingleCellExperiment object.
 Expression is based on having a count > 0 in a given cell.
 }
 \examples{
-data(sce, package = "demuxSNP")
-sce <- common_genes(sce)
+data(multiplexed_scrnaseq_sce)
+multiplexed_scrnaseq_sce <- common_genes(multiplexed_scrnaseq_sce)
 
 }
