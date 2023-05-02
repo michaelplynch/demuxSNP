@@ -21,7 +21,9 @@ Updated SingleCellExperiment object with snps in altExp slot
 Add SNPs to SingleCellExperiment object
 }
 \examples{
-data(sce, snps)
-sce <- add_snps(sce = sce, mat = snps, thresh = 0.8)
+data(multiplexed_scrnaseq_sce, vartrix_consensus_snps)
+multiplexed_scrnaseq_sce <- add_snps(sce = multiplexed_scrnaseq_sce, 
+mat = vartrix_consensus_snps, 
+thresh = 0.8)
 
 }

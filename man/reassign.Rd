@@ -37,9 +37,9 @@ Doublets are simulated by randomly combining 'd' SNP profiles from each
 grouping combination.
 }
 \examples{
-data(sce, snps)
-sce <- high_conf_calls(sce)
-sce <- add_snps(sce = sce, mat = snps, thresh = 0.8)
-sce <- reassign(sce = sce, k = 10)
+data(multiplexed_scrnaseq_sce, vartrix_consensus_snps)
+multiplexed_scrnaseq_sce <- high_conf_calls(multiplexed_scrnaseq_sce)
+multiplexed_scrnaseq_sce <- add_snps(sce = multiplexed_scrnaseq_sce, mat = vartrix_consensus_snps, thresh = 0.8)
+multiplexed_scrnaseq_sce <- reassign(sce = multiplexed_scrnaseq_sce, k = 10)
 
 }

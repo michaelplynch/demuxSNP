@@ -15,10 +15,10 @@
 #' @importFrom IRanges overlapsAny
 #' @import GenomeInfoDb
 #'
-#' @examples data(sce, vcf)
-#' top_genes <- common_genes(sce)
+#' @examples data(multiplexed_scrnaseq_sce, commonvariants_1kgenomes_subset)
+#' top_genes <- common_genes(multiplexed_scrnaseq_sce)
 #' ensdb <- EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86
-#' small_vcf <- subset_vcf(vcf, top_genes, ensdb)
+#' small_vcf <- subset_vcf(commonvariants_1kgenomes_subset, top_genes, ensdb)
 #'
 subset_vcf <- function(vcf, top_genes, ensdb) {
     # Input checks

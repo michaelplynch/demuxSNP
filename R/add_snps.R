@@ -11,15 +11,17 @@
 #' @importFrom methods is
 #' @import SingleCellExperiment
 #'
-#' @examples data(sce, snps)
-#' sce <- add_snps(sce = sce, mat = snps, thresh = 0.8)
+#' @examples data(multiplexed_scrnaseq_sce, vartrix_consensus_snps)
+#' multiplexed_scrnaseq_sce <- add_snps(sce = multiplexed_scrnaseq_sce, 
+#' mat = vartrix_consensus_snps, 
+#' thresh = 0.8)
 #'
 add_snps <- function(sce, mat, thresh = 0.8) {
     # Input checks
     stopifnot("'sce' must be of class SingleCellExperiment" = is(sce, "SingleCellExperiment"))
     stopifnot("thresh must be between 0 and 1" = thresh < 1 & thresh > 0)
     stopifnot("SingleCellExperiment and snps matrix contain unequal number of cells" = dim(counts(sce))[2] == dim(mat)[2])
-    stopifnot("Did you run VarTrix in the default 'consensus' mode?" = identical(mat, round(mat)))
+    stopifnot("Did you run VarTrix in the default 'consensus' mode?" = all(mat == 0 | mat == 1 | mat == 2 | mat == 3))
 
     # Add snps to sce
     mat_obs <- mat[(rowSums(mat > 0) / dim(mat)[2]) > thresh, ]

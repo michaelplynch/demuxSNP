@@ -20,9 +20,9 @@ object of class CollapsedVCF containing subset of SNPs from supplied vcf seen in
 Subset common variants vcf file to only SNPs seen in 'top_genes'
 }
 \examples{
-data(sce, vcf)
-top_genes <- common_genes(sce)
+data(multiplexed_scrnaseq_sce, commonvariants_1kgenomes_subset)
+top_genes <- common_genes(multiplexed_scrnaseq_sce)
 ensdb <- EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86
-small_vcf <- subset_vcf(vcf, top_genes, ensdb)
+small_vcf <- subset_vcf(commonvariants_1kgenomes_subset, top_genes, ensdb)
 
 }

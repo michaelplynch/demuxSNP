@@ -21,7 +21,7 @@ cells.
 Run demuxmix to determine high-confidence calls
 }
 \examples{
-data(sce)
-sce <- high_conf_calls(sce)
+data(multiplexed_scrnaseq_sce)
+multiplexed_scrnaseq_sce <- high_conf_calls(multiplexed_scrnaseq_sce)
 
 }
