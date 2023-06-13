@@ -35,11 +35,11 @@ Imports:
     SummarizedExperiment,
     demuxmix,
     methods,
-    combinat
+    combinat,
+    Seurat
 Suggests: 
     knitr,
     rmarkdown,
-    Seurat,
     ComplexHeatmap,
     viridisLite,
     ggpubr,
