@@ -20,7 +20,7 @@
 #'
 #' @importFrom methods is
 #' @importFrom class knn
-#' @importFrom combinat combn
+#' @importFrom utils combn
 #' @import SingleCellExperiment
 #'
 #' @examples data(multiplexed_scrnaseq_sce, vartrix_consensus_snps)
