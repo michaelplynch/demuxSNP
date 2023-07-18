@@ -35,8 +35,7 @@ Imports:
     SummarizedExperiment,
     demuxmix,
     methods,
-    combinat,
-    Seurat
+    combinat
 Suggests: 
     knitr,
     rmarkdown,
@@ -47,7 +46,8 @@ Suggests:
     EnsDb.Hsapiens.v86,
     BiocStyle,
     RefManageR,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    Seurat
 biocViews: Classification, SingleCell
 VignetteBuilder: knitr
 LazyData: false
