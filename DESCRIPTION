@@ -34,8 +34,7 @@ Imports:
     Matrix,
     SummarizedExperiment,
     demuxmix,
-    methods,
-    combinat
+    methods
 Suggests: 
     knitr,
     rmarkdown,
