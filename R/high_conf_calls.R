@@ -3,6 +3,7 @@
 #' @param sce Object of class SingleCellExperiment with HTO (or similar) altExp
 #'  assay
 #' @param assay Name of altExp for cell hashing counts to be retrieved from
+#' @param pacpt acceptance probability for demuxmix model
 #'
 #' @return Updated SingleCellExperiment object with logical vector indicating 
 #' training data, data to be classified (all cells) and assigned labels for all 
@@ -17,7 +18,7 @@
 #' @examples data(multiplexed_scrnaseq_sce)
 #' multiplexed_scrnaseq_sce <- high_conf_calls(multiplexed_scrnaseq_sce)
 #'
-high_conf_calls <- function(sce, assay = "HTO") {
+high_conf_calls <- function(sce, assay = "HTO", pacpt=0.95) {
     ## Check input
     stopifnot("'sce' must be of class SingleCellExperiment" = is(sce, "SingleCellExperiment"))
 
@@ -27,7 +28,7 @@ high_conf_calls <- function(sce, assay = "HTO") {
 
     # run demuxmix
     dmm <- demuxmix(hto, rna = rna)
-    pAcpt(dmm) <- 0.95
+    pAcpt(dmm) <- pacpt
     classes <- dmmClassify(dmm)
 
     # add labels back on to sce object

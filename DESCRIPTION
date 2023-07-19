@@ -1,6 +1,6 @@
 Package: demuxSNP
 Title: scRNAseq demultiplexing using cell hashing and SNPs
-Version: 0.99.10
+Version: 0.99.15
 Authors@R: c(
     person("Michael", "Lynch", 
       email = "michael.lynch@ul.ie", 
@@ -34,12 +34,10 @@ Imports:
     Matrix,
     SummarizedExperiment,
     demuxmix,
-    methods,
-    combinat
+    methods
 Suggests: 
     knitr,
     rmarkdown,
-    Seurat,
     ComplexHeatmap,
     viridisLite,
     ggpubr,
@@ -47,7 +45,8 @@ Suggests:
     EnsDb.Hsapiens.v86,
     BiocStyle,
     RefManageR,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    Seurat
 biocViews: Classification, SingleCell
 VignetteBuilder: knitr
 LazyData: false
