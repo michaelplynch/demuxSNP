@@ -14,12 +14,12 @@ knitr::opts_chunk$set(
 )
 ```
 
-# demuxSNP
+# demuxSNP <img src="man/figures/logo.png" align="right" height="138" alt="" />
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-# Introduction
+## Introduction
 
 Multiplexing in scRNAseq involves the sequencing of samples from different
 patients, treatment types or physiological locations together, resulting in
