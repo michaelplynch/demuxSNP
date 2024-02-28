@@ -1,11 +1,11 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# demuxSNP
+# demuxSNP <img src="man/figures/logo.png" align="right" height="138" alt="" />
 
 <!-- badges: start -->
 <!-- badges: end -->
-
+ 
 # Introduction
 
 Multiplexing in scRNAseq involves the sequencing of samples from
