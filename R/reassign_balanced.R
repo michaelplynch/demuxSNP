@@ -14,7 +14,7 @@
 #' @param train_cells logical vector specifying which cells to use to train 
 #' classifier
 #' @param predict_cells logical vector specifying which cells to classify
-#' @param n min n per class (where available)
+#' @param nmin min n per class (where available)
 #' @return A SingleCellExperiment with updated group assignments called 'knn'
 #' @export
 #'
