@@ -9,7 +9,8 @@ reassign_balanced(
   k = 10,
   d = 10,
   train_cells = sce$train,
-  predict_cells = sce$predict
+  predict_cells = sce$predict,
+  nmin = 50
 )
 }
 \arguments{
@@ -23,6 +24,8 @@ reassign_balanced(
 classifier}
 
 \item{predict_cells}{logical vector specifying which cells to classify}
+
+\item{nmin}{min n per class (where available)}
 }
 \value{
 A SingleCellExperiment with updated group assignments called 'knn'
