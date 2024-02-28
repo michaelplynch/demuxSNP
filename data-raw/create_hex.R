@@ -24,7 +24,7 @@ s <- sticker(p,
 library(cropcircles)
 img_cropped <- hex_crop(
   images = 'inst/figures/baseplot.png',
-  border_colour = "blue",
+  border_colour = "black",
   border_size = 24
 )
 
