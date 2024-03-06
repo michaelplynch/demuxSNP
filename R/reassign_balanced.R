@@ -14,6 +14,7 @@
 #' @param train_cells logical vector specifying which cells to use to train 
 #' classifier
 #' @param predict_cells logical vector specifying which cells to classify
+#' @param n number of cells per group (otherwise will be calculated from data)
 #' @param nmin min n per class (where available)
 #' @return A SingleCellExperiment with updated group assignments called 'knn'
 #' @export
@@ -31,14 +32,16 @@
 #' thresh = 0.8)
 #' multiplexed_scrnaseq_sce <- reassign_balanced(sce = multiplexed_scrnaseq_sce, k = 10)
 #'
-reassign_balanced <- function(sce, k = 10, d = 10, train_cells = sce$train, predict_cells = sce$predict, nmin = 50) {
+reassign_balanced <- function(sce, k = 10, d = 10, train_cells = sce$train, predict_cells = sce$predict, n = NULL, nmin = 50) {
   # Input checks
   stopifnot("'sce' must be of class SingleCellExperiment" = is(sce, "SingleCellExperiment"))
   stopifnot("k must be greater than or equal to two" = k > 1)
   stopifnot("k must be an integer" = k == round(k))
   
-  # rebalance training 
-  n <- min(table(as.character(sce$labels[train_cells])))
+  # rebalance training
+  if (is.null(n)) {
+    n <- min(table(as.character(sce$labels[train_cells])))
+  }
   print(n)
   if (n<50) {
     n=nmin
@@ -47,7 +50,7 @@ reassign_balanced <- function(sce, k = 10, d = 10, train_cells = sce$train, pred
   df<-data.frame(colData(sce[,train_cells]))
   df$barcodes<-rownames(df)
   df_balanced <- df %>% group_by(labels) %>% slice_sample(n=n)
-  
+  print(df_balanced$labels)
   # Singlet training data
   train <- counts(altExp(sce, "SNP"))[, colnames(sce) %in% df_balanced$barcodes]
   train[train == -1] <- 0

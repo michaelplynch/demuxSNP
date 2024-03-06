@@ -10,6 +10,7 @@ reassign_balanced(
   d = 10,
   train_cells = sce$train,
   predict_cells = sce$predict,
+  n = NULL,
   nmin = 50
 )
 }
@@ -24,6 +25,8 @@ reassign_balanced(
 classifier}
 
 \item{predict_cells}{logical vector specifying which cells to classify}
+
+\item{n}{number of cells per group (otherwise will be calculated from data)}
 
 \item{nmin}{min n per class (where available)}
 }
