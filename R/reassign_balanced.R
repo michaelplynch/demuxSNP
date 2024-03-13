@@ -50,7 +50,7 @@ reassign_balanced <- function(sce, k = 10, d = 10, train_cells = sce$train, pred
   df<-data.frame(colData(sce[,train_cells]))
   df$barcodes<-rownames(df)
   df_balanced <- df %>% group_by(labels) %>% slice_sample(n=n)
-  print(df_balanced$labels)
+  print(table(df_balanced$labels))
   # Singlet training data
   train <- counts(altExp(sce, "SNP"))[, colnames(sce) %in% df_balanced$barcodes]
   train[train == -1] <- 0
