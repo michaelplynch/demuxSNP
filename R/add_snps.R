@@ -34,7 +34,10 @@ add_snps <- function(sce, mat, thresh = 0.8) {
 
     se <- SingleCellExperiment(list(counts = mat_obs))
     colnames(se) <- colnames(sce)
-    rownames(se) <- rep("Snp", dim(mat_obs)[1])
+    if (is.null(rownames(se))) {
+      rownames(se) <- rep("Snp", dim(mat_obs)[1])
+    }
+  
     altExp(sce, "SNP") <- se
     return(sce)
 }

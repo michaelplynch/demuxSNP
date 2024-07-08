@@ -10,13 +10,14 @@
 #'
 #' @param sce object of class SingleCellExperiment
 #' @param k number of neighbours used in knn, defaults to 10
-#' @param d number of doublets per group combination to simulate, defaults to 10
+#' @param d_prop determines number of doublets simulatted d, as a proportions of n (specified or calculated)
 #' @param train_cells logical vector specifying which cells to use to train 
 #' classifier
 #' @param predict_cells logical vector specifying which cells to classify
 #' @param n number of cells per group (otherwise will be calculated from data)
 #' @param nmin min n per class (where available)
-#' @return A SingleCellExperiment with updated group assignments called 'knn'
+#' 
+#' @return A SingleCellExperiment with updated group assignments called 'knn_balanced'
 #' @export
 #'
 #' @importFrom methods is
@@ -30,28 +31,33 @@
 #' multiplexed_scrnaseq_sce <- add_snps(sce = multiplexed_scrnaseq_sce, 
 #' mat = vartrix_consensus_snps, 
 #' thresh = 0.8)
-#' multiplexed_scrnaseq_sce <- reassign_balanced(sce = multiplexed_scrnaseq_sce, k = 10)
+#' multiplexed_scrnaseq_sce <- reassign_balanced(sce = multiplexed_scrnaseq_sce, k = 10, d=0.5)
 #'
-reassign_balanced <- function(sce, k = 10, d = 10, train_cells = sce$train, predict_cells = sce$predict, n = NULL, nmin = 50) {
+reassign_balanced <- function(sce, k = 20, d_prop = 0.5, train_cells = sce$train, predict_cells = sce$predict, nmin = 50, n = NULL) {
   # Input checks
   stopifnot("'sce' must be of class SingleCellExperiment" = is(sce, "SingleCellExperiment"))
   stopifnot("k must be greater than or equal to two" = k > 1)
   stopifnot("k must be an integer" = k == round(k))
   
-  # rebalance training
+  # estimate n
   if (is.null(n)) {
     n <- min(table(as.character(sce$labels[train_cells])))
   }
   print(n)
-  if (n<50) {
+  if (n<nmin) {
     n=nmin
   }
-  print(n)
+  print(n) 
+  # calculate d
+  d=round(d_prop*n)
+  
+  # rebalance training data
   df<-data.frame(colData(sce[,train_cells]))
   df$barcodes<-rownames(df)
   df_balanced <- df %>% group_by(labels) %>% slice_sample(n=n)
   print(table(df_balanced$labels))
-  # Singlet training data
+  
+  # singlet training data
   train <- counts(altExp(sce, "SNP"))[, colnames(sce) %in% df_balanced$barcodes]
   train[train == -1] <- 0
   labels <- sce$labels[colnames(sce) %in% df_balanced$barcodes]
@@ -61,6 +67,8 @@ reassign_balanced <- function(sce, k = 10, d = 10, train_cells = sce$train, pred
   combs <- combs[combs$Var1 != combs$Var2, ]
   p <- combn(unique(combs$Var1), 2)
   combs_joined <- paste(p[1, ], p[2, ])
+  
+  # simulated doublet training data
   all <- matrix(data = NA, nrow = dim(altExp(sce, "SNP"))[1], 
                 ncol = d * length(combs_joined))
   for (i in seq_along(combs_joined)) {
@@ -77,6 +85,8 @@ reassign_balanced <- function(sce, k = 10, d = 10, train_cells = sce$train, pred
     colnames(all) <- rep("Doublet", dim(all)[2])
   }
   train_all <- cbind(train, all)
+  
+  # prediction using knn with jaccard distance
   pred <- as.data.frame(counts(altExp(sce, "SNP"))[, predict_cells == TRUE])
   pred[pred == -1] <- 0
   y = as.integer(as.factor(colnames(train_all)))

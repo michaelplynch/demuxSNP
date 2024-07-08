@@ -6,12 +6,12 @@
 \usage{
 reassign_balanced(
   sce,
-  k = 10,
-  d = 10,
+  k = 20,
+  d_prop = 0.5,
   train_cells = sce$train,
   predict_cells = sce$predict,
-  n = NULL,
-  nmin = 50
+  nmin = 50,
+  n = NULL
 )
 }
 \arguments{
@@ -19,19 +19,19 @@ reassign_balanced(
 
 \item{k}{number of neighbours used in knn, defaults to 10}
 
-\item{d}{number of doublets per group combination to simulate, defaults to 10}
+\item{d_prop}{determines number of doublets simulatted d, as a proportions of n (specified or calculated)}
 
 \item{train_cells}{logical vector specifying which cells to use to train
 classifier}
 
 \item{predict_cells}{logical vector specifying which cells to classify}
 
-\item{n}{number of cells per group (otherwise will be calculated from data)}
-
 \item{nmin}{min n per class (where available)}
+
+\item{n}{number of cells per group (otherwise will be calculated from data)}
 }
 \value{
-A SingleCellExperiment with updated group assignments called 'knn'
+A SingleCellExperiment with updated group assignments called 'knn_balanced'
 }
 \description{
 k-nearest neighbour classification of cells.
@@ -48,6 +48,6 @@ multiplexed_scrnaseq_sce <- high_conf_calls(multiplexed_scrnaseq_sce)
 multiplexed_scrnaseq_sce <- add_snps(sce = multiplexed_scrnaseq_sce, 
 mat = vartrix_consensus_snps, 
 thresh = 0.8)
-multiplexed_scrnaseq_sce <- reassign_balanced(sce = multiplexed_scrnaseq_sce, k = 10)
+multiplexed_scrnaseq_sce <- reassign_balanced(sce = multiplexed_scrnaseq_sce, k = 10, d=0.5)
 
 }
