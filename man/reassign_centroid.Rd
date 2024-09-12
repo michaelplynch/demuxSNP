@@ -4,14 +4,21 @@
 \alias{reassign_centroid}
 \title{Title}
 \usage{
-reassign_centroid(sce, train_cells = sce$train, predict_cells = sce$predict)
+reassign_centroid(
+  sce,
+  train_cells = sce$train,
+  predict_cells = sce$predict,
+  labels = sce$labels
+)
 }
 \arguments{
-\item{sce}{}
+\item{sce}{SingleCellExperiment object}
 
-\item{train_cells}{}
+\item{train_cells}{logical, cells to be used for training}
 
-\item{predict_cells}{}
+\item{predict_cells}{logical, cells to be used for prediction}
+
+\item{labels}{provisional cell labels}
 }
 \value{
 character vector containing reassignments
@@ -20,5 +27,10 @@ character vector containing reassignments
 Title
 }
 \examples{
-l<-reassign_centroi(sce)
+data(multiplexed_scrnaseq_sce, vartrix_consensus_snps)
+multiplexed_scrnaseq_sce <- high_conf_calls(multiplexed_scrnaseq_sce)
+multiplexed_scrnaseq_sce <- add_snps(sce = multiplexed_scrnaseq_sce, 
+mat = vartrix_consensus_snps, 
+thresh = 0.8)
+multiplexed_scrnaseq_sce<-reassign_centroid(multiplexed_scrnaseq_sce)
 }

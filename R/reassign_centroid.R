@@ -1,20 +1,25 @@
 #' Title
 #'
-#' @param sce 
-#' @param train_cells 
-#' @param predict_cells 
-#'
+#' @param sce SingleCellExperiment object
+#' @param train_cells logical, cells to be used for training
+#' @param predict_cells logical, cells to be used for prediction
+#' @param labels provisional cell labels
 #' @return character vector containing reassignments
 #' @export
-#'
+#' @importFrom stats aggregate
 #' @examples
-#' l<-reassign_centroid(sce)
+#' data(multiplexed_scrnaseq_sce, vartrix_consensus_snps)
+#' multiplexed_scrnaseq_sce <- high_conf_calls(multiplexed_scrnaseq_sce)
+#' multiplexed_scrnaseq_sce <- add_snps(sce = multiplexed_scrnaseq_sce, 
+#' mat = vartrix_consensus_snps, 
+#' thresh = 0.8)
+#' multiplexed_scrnaseq_sce<-reassign_centroid(multiplexed_scrnaseq_sce)
 reassign_centroid<-function(sce,train_cells=sce$train,predict_cells=sce$predict,labels=sce$labels) {
   
   snps<-counts(altExp(sce,"SNPcons"))
   # find cluster multivariate modes
   agg<-cluster_modes(snps_cons = snps, training_labels = labels)
-  print(head(agg))
+  #print(head(agg))
   print(dim(agg))
   print(sum(agg))
   # simulate doublets
