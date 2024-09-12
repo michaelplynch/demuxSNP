@@ -24,6 +24,15 @@ add_snps <- function(sce, mat, thresh = 0.8) {
     stopifnot("Did you run VarTrix in the default 'consensus' mode?" = all(mat %in% c(0,1,2,3)))
 
     mode(mat)<-"integer"
+    # Add raw snps to sce
+    se <- SingleCellExperiment(list(counts = mat))
+    colnames(se) <- colnames(sce)
+    if (is.null(rownames(mat))) {
+      rownames(se) <- rep("Snp", dim(mat)[1])
+    }
+    else {rownames(se)<-rownames(mat)}
+    altExp(sce, "SNPcons") <- se
+    
     # Add snps to sce
     mat_obs <- mat[(rowSums(mat > 0) / dim(mat)[2]) > thresh, ]
 
