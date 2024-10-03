@@ -1,4 +1,4 @@
-#' Title
+#' Reassign cells based on SNPs
 #'
 #' @param sce SingleCellExperiment object
 #' @param train_cells logical, cells to be used for training
@@ -14,11 +14,11 @@
 #' mat = vartrix_consensus_snps, 
 #' thresh = 0.8)
 #' multiplexed_scrnaseq_sce<-reassign_centroid(multiplexed_scrnaseq_sce)
-reassign_centroid<-function(sce,train_cells=sce$train,predict_cells=sce$predict,labels=sce$labels) {
+reassign_centroid<-function(sce,train_cells=sce$train,predict_cells=sce$predict,labels=sce$labels,min_cells=30) {
   
   snps<-counts(altExp(sce,"SNPcons"))
   # find cluster multivariate modes
-  agg<-cluster_modes(snps_cons = snps, training_labels = labels)
+  agg<-cluster_modes(snps_cons = snps, training_labels = labels,min_cells = min_cells)
   #print(head(agg))
   print(dim(agg))
   print(sum(agg))
@@ -31,7 +31,7 @@ reassign_centroid<-function(sce,train_cells=sce$train,predict_cells=sce$predict,
   # perform knn
   nearest_ns<-knearestneighbours(jw,k=1,train_cells,predict_cells,train_labels = colnames(train_mat))
   nearest_ns[!predict_cells]<-as.character(labels[!predict_cells])
-  nearest_ns<-gsub('Hashtag','K',nearest_ns) ## come back to this and make it generalisable
+  #nearest_ns<-gsub('Hashtag','K',nearest_ns) ## come back to this and make it generalisable
   return(nearest_ns)
 }
 
@@ -136,10 +136,10 @@ Mode <- function(x,min) {
     return(mod)}
 }
 
-cluster_modes<-function(snps_cons,training_labels) {
+cluster_modes<-function(snps_cons,training_labels,min_cells) {
   snps<-snps_cons
   snps_tf<-t(snps)
-  agg<-t(aggregate(snps_tf,by=list(training_labels), Mode,min=30))
+  agg<-t(aggregate(snps_tf,by=list(training_labels), Mode,min=min_cells))
   agg[is.na(agg)]<-0
   colnames(agg)<-agg[1,]
   agg<-agg[-c(1),]

@@ -144,7 +144,7 @@ relevant documentation.
 
 ## Workflow
 
-```{r}
+```{r eval=FALSE}
 #Data loading
 data(multiplexed_scrnaseq_sce, 
      commonvariants_1kgenomes_subset, 
@@ -164,7 +164,7 @@ small_sce<-high_conf_calls(small_sce)
 
 small_sce<-add_snps(small_sce,vartrix_consensus_snps[,1:100])
 
-small_sce<-reassign(small_sce,k=5)
+small_sce<-reassign_centroid(small_sce,min_cells = 5)
 
 table(small_sce$knn)
 ```
@@ -191,11 +191,10 @@ SingleCellExperiment object as an altExp. Additionally, filters out SNPs with no
 reads in less than 'thresh' proportion of cells.
 
 ```{r eval=FALSE}
-sce <- reassign(sce,
-    k = 10,
-    d = 10,
+sce <- reassign_centroid(sce,
     train_cells = sce$train,
-    predict_cells = sce$predict
+    predict_cells = sce$predict,
+    min_cells=5
 )
 ```
 Reassigns cells based on SNP profiles of high confidence cells. Singlet training
@@ -216,6 +215,11 @@ removed low quality cells (library size\<1,000 and percentage of genes mapping
 to mitochondrial genes\>10%).
 
 ```{r}
+
+data(multiplexed_scrnaseq_sce, 
+     commonvariants_1kgenomes_subset, 
+     vartrix_consensus_snps, 
+     package = "demuxSNP")
 
 class(multiplexed_scrnaseq_sce)
 class(commonvariants_1kgenomes_subset)
@@ -395,11 +399,11 @@ training data is the high confidence cells
 
 ```{r}
 set.seed(1)
-multiplexed_scrnaseq_sce <- reassign(multiplexed_scrnaseq_sce,
-    k = 10,
-    d = 10,
+multiplexed_scrnaseq_sce$labels<-as.character(multiplexed_scrnaseq_sce$labels)
+multiplexed_scrnaseq_sce$knn <- reassign_centroid(multiplexed_scrnaseq_sce,
     train_cells = multiplexed_scrnaseq_sce$train,
-    predict_cells = multiplexed_scrnaseq_sce$predict
+    predict_cells = multiplexed_scrnaseq_sce$predict,
+    min_cells = 5
 )
 
 table(multiplexed_scrnaseq_sce$knn)
@@ -456,7 +460,7 @@ as being from a singlet group, then split this into a training and test dataset.
 ```{r}
 sce_test <- multiplexed_scrnaseq_sce[, multiplexed_scrnaseq_sce$train == TRUE]
 sce_test$knn <- NULL
-sce_test$labels <- droplevels(sce_test$labels)
+#sce_test$labels <- droplevels(sce_test$labels)
 sce_test
 
 sce_test$train2 <- rep(FALSE, length(sce_test$train))
@@ -469,7 +473,7 @@ Comparing the predicted labels in the test dataset with the hidden high
 confidence labels, we see excellent agreement.
 
 ```{r}
-sce_test <- reassign(sce_test, k = 3, train_cells = sce_test$train2, predict_cells = sce_test$test)
+sce_test$knn <- reassign_centroid(sce_test, train_cells = sce_test$train2, predict_cells = sce_test$test, min_cells = 5)
 
 table(sce_test$labels[sce_test$test == TRUE], sce_test$knn[sce_test$test == TRUE])
 ```
@@ -481,7 +485,7 @@ initially identical to the labels used in training previously.
 ```{r}
 sce_test$knn <- NULL
 
-sce_test$labels2 <- droplevels(sce_test$labels)
+sce_test$labels2 <- sce_test$labels
 
 table(sce_test$labels, sce_test$labels2)
 ```
@@ -495,9 +499,10 @@ sce_test$labels2[which(sce_test$labels2 == "Hashtag5")[1:25]] <- "Hashtag2"
 
 table(sce_test$labels, sce_test$labels2)
 
-sce_test <- reassign(sce_test,
+sce_test$knn <- reassign_centroid(sce_test,
     train_cells = sce_test$train,
-    predict_cells = sce_test$train
+    predict_cells = sce_test$train,
+    min_cells = 5
 )
 
 table(sce_test$labels, sce_test$knn)

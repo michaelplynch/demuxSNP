@@ -2,13 +2,14 @@
 % Please edit documentation in R/reassign_centroid.R
 \name{reassign_centroid}
 \alias{reassign_centroid}
-\title{Title}
+\title{Reassign cells based on cells}
 \usage{
 reassign_centroid(
   sce,
   train_cells = sce$train,
   predict_cells = sce$predict,
-  labels = sce$labels
+  labels = sce$labels,
+  min_cells = 30
 )
 }
 \arguments{
@@ -24,7 +25,7 @@ reassign_centroid(
 character vector containing reassignments
 }
 \description{
-Title
+Reassign cells based on cells
 }
 \examples{
 data(multiplexed_scrnaseq_sce, vartrix_consensus_snps)
