@@ -15,7 +15,7 @@
 #' classifier
 #' @param predict_cells logical vector specifying which cells to classify
 #'
-#' @return A SingleCellExperiment with updated group assignments called 'knn'
+#' @return A SingleCellExperiment with updated group assignments called 'knn_jaccard'
 #' @export
 #'
 #' @importFrom methods is

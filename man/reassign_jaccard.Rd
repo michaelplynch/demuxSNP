@@ -25,7 +25,7 @@ classifier}
 \item{predict_cells}{logical vector specifying which cells to classify}
 }
 \value{
-A SingleCellExperiment with updated group assignments called 'knn'
+A SingleCellExperiment with updated group assignments called 'knn_jaccard'
 }
 \description{
 k-nearest neighbour classification of cells.
