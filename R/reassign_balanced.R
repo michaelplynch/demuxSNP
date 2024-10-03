@@ -31,6 +31,7 @@
 #' multiplexed_scrnaseq_sce <- add_snps(sce = multiplexed_scrnaseq_sce, 
 #' mat = vartrix_consensus_snps, 
 #' thresh = 0.8)
+
 #' multiplexed_scrnaseq_sce <- reassign_balanced(sce = multiplexed_scrnaseq_sce, k = 10, d=0.5)
 #'
 reassign_balanced <- function(sce, k = 20, d_prop = 0.5, train_cells = sce$train, predict_cells = sce$predict, nmin = 50, n = NULL) {
@@ -85,7 +86,6 @@ reassign_balanced <- function(sce, k = 20, d_prop = 0.5, train_cells = sce$train
     colnames(all) <- rep("Doublet", dim(all)[2])
   }
   train_all <- cbind(train, all)
-  
   # prediction using knn with jaccard distance
   pred <- as.data.frame(counts(altExp(sce, "SNP"))[, predict_cells == TRUE])
   pred[pred == -1] <- 0
