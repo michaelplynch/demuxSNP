@@ -2,7 +2,7 @@
 % Please edit documentation in R/reassign_centroid.R
 \name{reassign_centroid}
 \alias{reassign_centroid}
-\title{Reassign cells based on cells}
+\title{Reassign cells based on SNPs}
 \usage{
 reassign_centroid(
   sce,
@@ -20,12 +20,14 @@ reassign_centroid(
 \item{predict_cells}{logical, cells to be used for prediction}
 
 \item{labels}{provisional cell labels}
+
+\item{min_cells}{minimum coverage (number of cells with read at SNP location) for SNP to be used for classification.}
 }
 \value{
 character vector containing reassignments
 }
 \description{
-Reassign cells based on cells
+Reassign cells based on SNPs
 }
 \examples{
 data(multiplexed_scrnaseq_sce, vartrix_consensus_snps)

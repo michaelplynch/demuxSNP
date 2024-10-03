@@ -4,6 +4,7 @@
 #' @param train_cells logical, cells to be used for training
 #' @param predict_cells logical, cells to be used for prediction
 #' @param labels provisional cell labels
+#' @param min_cells minimum coverage (number of cells with read at SNP location) for SNP to be used for classification.
 #' @return character vector containing reassignments
 #' @export
 #' @importFrom stats aggregate
