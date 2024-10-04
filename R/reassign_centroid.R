@@ -5,6 +5,7 @@
 #' @param predict_cells logical, cells to be used for prediction
 #' @param labels provisional cell labels
 #' @param min_cells minimum coverage (number of cells with read at SNP location) for SNP to be used for classification.
+#' @param key unique key in naming of singlet groups used with grep to remove doublet/negative/uncertain labels
 #' @return character vector containing reassignments
 #' @export
 #' @importFrom stats aggregate
@@ -15,16 +16,16 @@
 #' mat = vartrix_consensus_snps, 
 #' thresh = 0.8)
 #' multiplexed_scrnaseq_sce<-reassign_centroid(multiplexed_scrnaseq_sce)
-reassign_centroid<-function(sce,train_cells=sce$train,predict_cells=sce$predict,labels=sce$labels,min_cells=30) {
+reassign_centroid<-function(sce,train_cells=sce$train,predict_cells=sce$predict,labels=sce$labels,min_cells=30,key="Hashtag") {
   
   snps<-counts(altExp(sce,"SNPcons"))
   # find cluster multivariate modes
-  agg<-cluster_modes(snps_cons = snps, training_labels = labels,min_cells = min_cells)
+  agg<-cluster_modes(snps_cons = snps, training_labels = labels, min_cells = min_cells)
   #print(head(agg))
   print(dim(agg))
   print(sum(agg))
   # simulate doublets
-  train_mat<-sim_doubs(centroids=agg)
+  train_mat<-sim_doubs(centroids=agg[,grep(key,colnames(agg))])
   
   # create distance matrix
   jw<-jaccard_weighted(snps_predict=snps ,snps_train=train_mat)
@@ -38,7 +39,7 @@ reassign_centroid<-function(sce,train_cells=sce$train,predict_cells=sce$predict,
 
 
 sim_doubs<-function(centroids) {
-  agg_doub<-centroids[,1:6]
+  agg_doub<-centroids
   labels <- colnames(agg_doub)
   p <- combn(unique(labels), 2)
   combs_joined <- paste(p[1, ], p[2, ])

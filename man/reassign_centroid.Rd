@@ -9,7 +9,8 @@ reassign_centroid(
   train_cells = sce$train,
   predict_cells = sce$predict,
   labels = sce$labels,
-  min_cells = 30
+  min_cells = 30,
+  key = "Hashtag"
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ reassign_centroid(
 \item{labels}{provisional cell labels}
 
 \item{min_cells}{minimum coverage (number of cells with read at SNP location) for SNP to be used for classification.}
+
+\item{key}{unique key in naming of singlet groups used with grep to remove doublet/negative/uncertain labels}
 }
 \value{
 character vector containing reassignments

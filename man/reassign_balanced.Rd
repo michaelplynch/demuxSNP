@@ -26,7 +26,6 @@ classifier}
 
 \item{predict_cells}{logical vector specifying which cells to classify}
 
-
 \item{nmin}{min n per class (where available)}
 
 \item{n}{number of cells per group (otherwise will be calculated from data)}
