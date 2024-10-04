@@ -93,10 +93,10 @@ jaccard_weighted<-function(snps_predict,snps_train) {
   c <- ((1 - mat)*mat_bin) %*% t(mat_train*mat_bin_train)
   d <- ((1 - mat)*mat_bin) %*% t((1 - mat_train)*mat_bin_train)
   
-  print(a[1:5,1:6])
-  print(b[1:5,1:6])
-  print(c[1:5,1:6])
-  print(d[1:5,1:6])
+  #print(a[1:5,1:6])
+  #print(b[1:5,1:6])
+  #print(c[1:5,1:6])
+  #print(d[1:5,1:6])
   
   j<-1-((a)/(a+b+c))
   return(j)
