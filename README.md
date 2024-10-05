@@ -5,8 +5,8 @@
 
 <!-- badges: start -->
 <!-- badges: end -->
- 
-# Introduction
+
+## Introduction
 
 Multiplexing in scRNAseq involves the sequencing of samples from
 different patients, treatment types or physiological locations together,
@@ -105,8 +105,6 @@ devtools::install_github("michaelplynch/demuxSNP")
 
 ``` r
 library(demuxSNP)
-#> Warning: replacing previous import 'utils::findMatches' by
-#> 'S4Vectors::findMatches' when loading 'AnnotationDbi'
 library(ComplexHeatmap)
 library(viridisLite)
 library(Seurat)
@@ -145,7 +143,7 @@ small_sce<-reassign(small_sce,k=5)
 table(small_sce$knn)
 #> 
 #>  Doublet Hashtag1 Hashtag3 Hashtag4 Hashtag5 Hashtag6 
-#>       22       10       16        7       13       32
+#>       22       10       17        7       11       33
 ```
 
 ## Example
@@ -190,12 +188,21 @@ algorithm on the data.
 logcounts(multiplexed_scrnaseq_sce) <- counts(multiplexed_scrnaseq_sce)
 seurat <- as.Seurat(multiplexed_scrnaseq_sce)
 seurat <- HTODemux(seurat)
+#> As of Seurat v5, we recommend using AggregateExpression to perform pseudo-bulk analysis.
+#> First group.by variable `ident` starts with a number, appending `g` to ensure valid variable names
 #> Cutoff for Hashtag1 : 44 reads
+#> 
 #> Cutoff for Hashtag2 : 39 reads
+#> 
 #> Cutoff for Hashtag3 : 323 reads
+#> 
 #> Cutoff for Hashtag4 : 99 reads
+#> 
 #> Cutoff for Hashtag5 : 107 reads
+#> 
 #> Cutoff for Hashtag6 : 175 reads
+#> 
+#> This message is displayed once per session.
 seurat$hash.ID <- factor(as.character(seurat$hash.ID))
 multiplexed_scrnaseq_sce$seurat <- seurat$hash.ID
 
@@ -407,17 +414,50 @@ profiles. The training data is the high confidence cells
 
 ``` r
 set.seed(1)
-multiplexed_scrnaseq_sce <- reassign(multiplexed_scrnaseq_sce,
-    k = 10,
-    d = 10,
+multiplexed_scrnaseq_sce$labels<-as.character(multiplexed_scrnaseq_sce$labels)
+multiplexed_scrnaseq_sce$knn <- reassign_centroid(multiplexed_scrnaseq_sce,
     train_cells = multiplexed_scrnaseq_sce$train,
-    predict_cells = multiplexed_scrnaseq_sce$predict
+    predict_cells = multiplexed_scrnaseq_sce$predict,
+    min_cells = 5
 )
+#> [1] 2542    6
+#> [1] 3837
+#> Hashtag1 Hashtag2 Hashtag3 Hashtag4 Hashtag5 Hashtag6  Doublet  Doublet 
+#>      579      394      845      571      696      752      501      756 
+#>  Doublet  Doublet  Doublet  Doublet  Doublet  Doublet  Doublet  Doublet 
+#>      689      746      743      528      480      499      477      773 
+#>  Doublet  Doublet  Doublet  Doublet  Doublet 
+#>      875      944      706      719      846 
+#>                    Hashtag1 Hashtag2 Hashtag3 Hashtag4 Hashtag5 Hashtag6
+#> AAACCTGAGATCTGCT-1       71       47       60       53       52       51
+#> AAACCTGAGCGTCAAG-1       46       48       40       61       44       49
+#> AAACCTGAGGCGTACA-1       40       49       49       45       51       68
+#> AAACCTGAGGGCTCTC-1       64       78       61       59       62       73
+#> AAACCTGAGTAGGTGC-1       63       65       65       64       73       91
+#>                    Hashtag1 Hashtag2 Hashtag3 Hashtag4 Hashtag5 Hashtag6
+#> AAACCTGAGATCTGCT-1        7       23       19       25       26       27
+#> AAACCTGAGCGTCAAG-1       16       12       24        3       20       15
+#> AAACCTGAGGCGTACA-1       27       14       19       22       15        0
+#> AAACCTGAGGGCTCTC-1       36        6       45       42       41       31
+#> AAACCTGAGTAGGTGC-1       36       19       34       33       25        8
+#>                    Hashtag1 Hashtag2 Hashtag3 Hashtag4 Hashtag5 Hashtag6
+#> AAACCTGAGATCTGCT-1        3       23       20       17       24       22
+#> AAACCTGAGCGTCAAG-1       20       19       36        8       26       23
+#> AAACCTGAGGCGTACA-1       29       19       26       23       17        3
+#> AAACCTGAGGGCTCTC-1       23        4       36       23       29       25
+#> AAACCTGAGTAGGTGC-1       31       21       29       25       20        4
+#>                    Hashtag1 Hashtag2 Hashtag3 Hashtag4 Hashtag5 Hashtag6
+#> AAACCTGAGATCTGCT-1      109       75       94       95       90       91
+#> AAACCTGAGCGTCAAG-1       96       84       82      109       92       94
+#> AAACCTGAGGCGTACA-1       85       82       94       91       99      118
+#> AAACCTGAGGGCTCTC-1      118      108      111      119      119      120
+#> AAACCTGAGTAGGTGC-1      113      102      115      116      122      143
+#> [1] 1500
 
 table(multiplexed_scrnaseq_sce$knn)
 #> 
 #>  Doublet Hashtag1 Hashtag2 Hashtag3 Hashtag4 Hashtag5 Hashtag6 
-#>      337      119       30      349      174      464      527
+#>      464      119       30      340      155      429      463
 ```
 
 ``` r
@@ -476,7 +516,7 @@ training and test dataset.
 ``` r
 sce_test <- multiplexed_scrnaseq_sce[, multiplexed_scrnaseq_sce$train == TRUE]
 sce_test$knn <- NULL
-sce_test$labels <- droplevels(sce_test$labels)
+#sce_test$labels <- droplevels(sce_test$labels)
 sce_test
 #> class: SingleCellExperiment 
 #> dim: 259 1045 
@@ -489,7 +529,7 @@ sce_test
 #> colData names(11): orig.ident nCount_RNA ... predict labels
 #> reducedDimNames(0):
 #> mainExpName: RNA
-#> altExpNames(2): HTO SNP
+#> altExpNames(3): HTO SNPcons SNP
 
 sce_test$train2 <- rep(FALSE, length(sce_test$train))
 sce_test$train2[seq_len(500)] <- TRUE
@@ -501,110 +541,61 @@ Comparing the predicted labels in the test dataset with the hidden high
 confidence labels, we see excellent agreement.
 
 ``` r
-sce_test <- reassign(sce_test, k = 3, train_cells = sce_test$train2, predict_cells = sce_test$test)
+sce_test$knn <- reassign_centroid(sce_test, train_cells = sce_test$train2, predict_cells = sce_test$test, min_cells = 5)
+#> [1] 2542    6
+#> [1] 3837
+#> Hashtag1 Hashtag2 Hashtag3 Hashtag4 Hashtag5 Hashtag6  Doublet  Doublet 
+#>      579      394      845      571      696      752      501      756 
+#>  Doublet  Doublet  Doublet  Doublet  Doublet  Doublet  Doublet  Doublet 
+#>      689      746      743      528      480      499      477      773 
+#>  Doublet  Doublet  Doublet  Doublet  Doublet 
+#>      875      944      706      719      846 
+#>                    Hashtag1 Hashtag2 Hashtag3 Hashtag4 Hashtag5 Hashtag6
+#> AAACCTGAGCGTCAAG-1       46       48       40       61       44       49
+#> AAACCTGAGGCGTACA-1       40       49       49       45       51       68
+#> AAACCTGAGGGCTCTC-1       64       78       61       59       62       73
+#> AAACCTGAGTAGGTGC-1       63       65       65       64       73       91
+#> AAACCTGAGTCAATAG-1       56       58       58       61       66       83
+#>                    Hashtag1 Hashtag2 Hashtag3 Hashtag4 Hashtag5 Hashtag6
+#> AAACCTGAGCGTCAAG-1       16       12       24        3       20       15
+#> AAACCTGAGGCGTACA-1       27       14       19       22       15        0
+#> AAACCTGAGGGCTCTC-1       36        6       45       42       41       31
+#> AAACCTGAGTAGGTGC-1       36       19       34       33       25        8
+#> AAACCTGAGTCAATAG-1       28       16       33       23       19        7
+#>                    Hashtag1 Hashtag2 Hashtag3 Hashtag4 Hashtag5 Hashtag6
+#> AAACCTGAGCGTCAAG-1       20       19       36        8       26       23
+#> AAACCTGAGGCGTACA-1       29       19       26       23       17        3
+#> AAACCTGAGGGCTCTC-1       23        4       36       23       29       25
+#> AAACCTGAGTAGGTGC-1       31       21       29       25       20        4
+#> AAACCTGAGTCAATAG-1       28       19       30       27       23        4
+#>                    Hashtag1 Hashtag2 Hashtag3 Hashtag4 Hashtag5 Hashtag6
+#> AAACCTGAGCGTCAAG-1       96       84       82      109       92       94
+#> AAACCTGAGGCGTACA-1       85       82       94       91       99      118
+#> AAACCTGAGGGCTCTC-1      118      108      111      119      119      120
+#> AAACCTGAGTAGGTGC-1      113      102      115      116      122      143
+#> AAACCTGAGTCAATAG-1      122      110      130      126      136      159
 
 table(sce_test$labels[sce_test$test == TRUE], sce_test$knn[sce_test$test == TRUE])
 #>           
 #>            Doublet Hashtag1 Hashtag2 Hashtag3 Hashtag4 Hashtag5 Hashtag6
-#>   Hashtag1       1       35        0        0        0        0        0
-#>   Hashtag2       1        0       10        0        0        0        0
+#>   Hashtag1       2       34        0        0        0        0        0
+#>   Hashtag2       0        0       11        0        0        0        0
 #>   Hashtag3       0        0        0      122        0        0        0
-#>   Hashtag4       0        0        0        0       46        0        0
-#>   Hashtag5       1        0        0        0        0      193        1
-#>   Hashtag6       0        0        0        0        0        0      135
+#>   Hashtag4       1        0        0        0       45        0        0
+#>   Hashtag5       7        0        0        0        0      187        1
+#>   Hashtag6       1        0        0        0        0        0      134
 ```
-
-We can also show that that the model can correct misclassified cells
-when predicted back on the training data. We create a new vector
-“labels2” which is initially identical to the labels used in training
-previously.
-
-``` r
-sce_test$knn <- NULL
-
-sce_test$labels2 <- droplevels(sce_test$labels)
-
-table(sce_test$labels, sce_test$labels2)
-#>           
-#>            Hashtag1 Hashtag2 Hashtag3 Hashtag4 Hashtag5 Hashtag6
-#>   Hashtag1       62        0        0        0        0        0
-#>   Hashtag2        0       15        0        0        0        0
-#>   Hashtag3        0        0      226        0        0        0
-#>   Hashtag4        0        0        0      102        0        0
-#>   Hashtag5        0        0        0        0      348        0
-#>   Hashtag6        0        0        0        0        0      292
-```
-
-We then randomly reassign 25 cells from Hashtag5 to Hashtag2 in the
-training data. Predicting the model back on itself we see that in the
-new predicted labels, the 25 altered have been correctly reclassified
-back to Hashtag5
-
-``` r
-sce_test$labels2[which(sce_test$labels2 == "Hashtag5")[1:25]] <- "Hashtag2"
-
-table(sce_test$labels, sce_test$labels2)
-#>           
-#>            Hashtag1 Hashtag2 Hashtag3 Hashtag4 Hashtag5 Hashtag6
-#>   Hashtag1       62        0        0        0        0        0
-#>   Hashtag2        0       15        0        0        0        0
-#>   Hashtag3        0        0      226        0        0        0
-#>   Hashtag4        0        0        0      102        0        0
-#>   Hashtag5        0       25        0        0      323        0
-#>   Hashtag6        0        0        0        0        0      292
-
-sce_test <- reassign(sce_test,
-    train_cells = sce_test$train,
-    predict_cells = sce_test$train
-)
-
-table(sce_test$labels, sce_test$knn)
-#>           
-#>            Doublet Hashtag1 Hashtag2 Hashtag3 Hashtag4 Hashtag5 Hashtag6
-#>   Hashtag1       0       62        0        0        0        0        0
-#>   Hashtag2       0        0       15        0        0        0        0
-#>   Hashtag3       0        0        0      226        0        0        0
-#>   Hashtag4       0        0        0        0      102        0        0
-#>   Hashtag5       1        0        0        0        0      346        1
-#>   Hashtag6       0        0        0        0        0        0      292
-```
-
-For the knn Hashtag6 group, we see mostly good agreement with the
-original demuxmix labels. However, it appears one cell now being called
-a Hashtag6 was originally called Hashtag5. Again, we can investigate
-this by visualising the corresponding SNP profile. In doing so, we can
-see that this most likely is a true Hashtag6.
-
-``` r
-hm <- Heatmap(counts(altExp(sce_test, "SNP"))[, sce_test$knn == "Hashtag6"],
-    column_split = sce_test$labels[sce_test$knn == "Hashtag6"],
-    cluster_rows = FALSE,
-    show_column_names = FALSE,
-    cluster_column_slices = FALSE,
-    column_names_rot = 45,
-    column_title_rot = -45,
-    row_title = "SNPs",
-    show_row_names = FALSE,
-    col = colors
-)
-
-draw(hm,
-    column_title = "knn Hashtag6 group split by demuxmix classification",
-    padding = unit(c(2, 15, 2, 2), "mm")
-)
-```
-
-<img src="man/figures/README-unnamed-chunk-23-1.png" width="100%" />
 
 # References
 
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
 
 <div id="ref-boggy_bff_2022" class="csl-entry">
 
 Boggy, Gregory J, G W McElfresh, Eisa Mahyari, Abigail B Ventura, Scott
-G Hansen, Louis J Picker, and Benjamin N Bimber. 2022. “BFF and <span
-class="nocase">cellhashR</span>: Analysis Tools for Accurate
+G Hansen, Louis J Picker, and Benjamin N Bimber. 2022. “BFF and
+<span class="nocase">cellhashR</span>: Analysis Tools for Accurate
 Demultiplexing of Cell Hashing Data.” *Bioinformatics* 38 (10):
 2791–801. <https://doi.org/10.1093/bioinformatics/btac213>.
 
