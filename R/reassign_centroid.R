@@ -1,9 +1,11 @@
-#' Title
+#' Reassign cells based on SNPs
 #'
 #' @param sce SingleCellExperiment object
 #' @param train_cells logical, cells to be used for training
 #' @param predict_cells logical, cells to be used for prediction
 #' @param labels provisional cell labels
+#' @param min_cells minimum coverage (number of cells with read at SNP location) for SNP to be used for classification.
+#' @param key unique key in naming of singlet groups used with grep to remove doublet/negative/uncertain labels
 #' @return character vector containing reassignments
 #' @export
 #' @importFrom stats aggregate
@@ -14,16 +16,24 @@
 #' mat = vartrix_consensus_snps, 
 #' thresh = 0.8)
 #' multiplexed_scrnaseq_sce<-reassign_centroid(multiplexed_scrnaseq_sce)
+<<<<<<< HEAD
 reassign_centroid<-function(sce,train_cells=sce$train,predict_cells=sce$predict,labels=sce$labels) {
   message('demuxSNP does not distinguish between heterozygous and homozygous alt SNP loci and therefore should not be used for closely related samples')
   snps<-counts(altExp(sce,"SNPcons"))
   # find cluster multivariate modes
   agg<-cluster_modes(snps_cons = snps[,train_cells], training_labels = labels[train_cells])
+=======
+reassign_centroid<-function(sce,train_cells=sce$train,predict_cells=sce$predict,labels=sce$labels,min_cells=30,key="Hashtag") {
+  
+  snps<-counts(altExp(sce,"SNPcons"))
+  # find cluster multivariate modes
+  agg<-cluster_modes(snps_cons = snps, training_labels = labels, min_cells = min_cells)
+>>>>>>> upstream/RELEASE_3_20
   #print(head(agg))
   print(dim(agg))
   print(sum(agg))
   # simulate doublets
-  train_mat<-sim_doubs(centroids=agg)
+  train_mat<-sim_doubs(centroids=agg[,grep(key,colnames(agg))])
   
   # create distance matrix
   jw<-jaccard_weighted(snps_predict=snps ,snps_train=train_mat)
@@ -31,7 +41,7 @@ reassign_centroid<-function(sce,train_cells=sce$train,predict_cells=sce$predict,
   # perform knn
   nearest_ns<-knearestneighbours(jw,k=1,train_cells,predict_cells,train_labels = colnames(train_mat))
   nearest_ns[!predict_cells]<-as.character(labels[!predict_cells])
-  nearest_ns<-gsub('Hashtag','K',nearest_ns) ## come back to this and make it generalisable
+  #nearest_ns<-gsub('Hashtag','K',nearest_ns) ## come back to this and make it generalisable
   return(nearest_ns)
 }
 
@@ -91,10 +101,10 @@ jaccard_weighted<-function(snps_predict,snps_train) {
   c <- ((1 - mat)*mat_bin) %*% t(mat_train*mat_bin_train)
   d <- ((1 - mat)*mat_bin) %*% t((1 - mat_train)*mat_bin_train)
   
-  print(a[1:5,1:6])
-  print(b[1:5,1:6])
-  print(c[1:5,1:6])
-  print(d[1:5,1:6])
+  #print(a[1:5,1:6])
+  #print(b[1:5,1:6])
+  #print(c[1:5,1:6])
+  #print(d[1:5,1:6])
   
   j<-1-((a)/(a+b+c))
   return(j)
@@ -136,10 +146,10 @@ Mode <- function(x,min) {
     return(mod)}
 }
 
-cluster_modes<-function(snps_cons,training_labels) {
+cluster_modes<-function(snps_cons,training_labels,min_cells) {
   snps<-snps_cons
   snps_tf<-t(snps)
-  agg<-t(aggregate(snps_tf,by=list(training_labels), Mode,min=30))
+  agg<-t(aggregate(snps_tf,by=list(training_labels), Mode,min=min_cells))
   agg[is.na(agg)]<-0
   colnames(agg)<-agg[1,]
   agg<-agg[-c(1),]
