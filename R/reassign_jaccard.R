@@ -32,6 +32,8 @@
 #' multiplexed_scrnaseq_sce <- reassign(sce = multiplexed_scrnaseq_sce, k = 10)
 #'
 reassign_jaccard <- function(sce, k = 10, d = 10, train_cells = sce$train, predict_cells = sce$predict) {
+  message('demuxSNP does not distinguish between heterozygous and homozygous alt SNP loci and therefore should not be used for closely related samples')
+  warning('This function is deprecated, please use reassign_centroid() function instead.')
   # Input checks
   stopifnot("'sce' must be of class SingleCellExperiment" = is(sce, "SingleCellExperiment"))
   stopifnot("k must be greater than or equal to two" = k > 1)

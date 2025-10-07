@@ -34,6 +34,8 @@
 #' multiplexed_scrnaseq_sce <- reassign_balanced(sce = multiplexed_scrnaseq_sce, k = 10, d=0.5)
 #'
 reassign_balanced <- function(sce, k = 20, d_prop = 0.5, train_cells = sce$train, predict_cells = sce$predict, nmin = 50, n = NULL) {
+  message('demuxSNP does not distinguish between heterozygous and homozygous alt SNP loci and therefore should not be used for closely related samples')
+  warning('This function is deprecated, please use reassign_centroid() function instead.')
   # Input checks
   stopifnot("'sce' must be of class SingleCellExperiment" = is(sce, "SingleCellExperiment"))
   stopifnot("k must be greater than or equal to two" = k > 1)

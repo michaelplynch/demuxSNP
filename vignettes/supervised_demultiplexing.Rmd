@@ -164,9 +164,9 @@ small_sce<-high_conf_calls(small_sce)
 
 small_sce<-add_snps(small_sce,vartrix_consensus_snps[,1:100])
 
-small_sce<-reassign(small_sce,k=5)
+small_sce$demuxsnp<-reassign_centroid(small_sce)
 
-table(small_sce$knn)
+table(small_sce$demuxsnp)
 ```
 
 ### Function Explanation
@@ -191,7 +191,7 @@ SingleCellExperiment object as an altExp. Additionally, filters out SNPs with no
 reads in less than 'thresh' proportion of cells.
 
 ```{r eval=FALSE}
-sce <- reassign(sce,
+sce <- reassign_centroid(sce,
     k = 10,
     d = 10,
     train_cells = sce$train,
@@ -262,7 +262,9 @@ Although HTO library size of the Negative group is low, the RNA library size is
 similar to that of other groups, indicating that they may be misclassified as
 Negative due to their tagging quality rather than overall RNA quality.
 
-```{r}
+**Plots suppressed pending update to dittoSeq**
+
+```{r eval=F}
 dittoPlot(seurat, "nCount_HTO", group.by = "hash.ID")
 dittoPlot(seurat, "nCount_RNA", group.by = "hash.ID")
 ```
@@ -395,19 +397,17 @@ training data is the high confidence cells
 
 ```{r}
 set.seed(1)
-multiplexed_scrnaseq_sce <- reassign(multiplexed_scrnaseq_sce,
-    k = 10,
-    d = 10,
+multiplexed_scrnaseq_sce$demuxsnp <- reassign_centroid(multiplexed_scrnaseq_sce,
     train_cells = multiplexed_scrnaseq_sce$train,
-    predict_cells = multiplexed_scrnaseq_sce$predict
+    predict_cells = !multiplexed_scrnaseq_sce$train
 )
 
-table(multiplexed_scrnaseq_sce$knn)
+table(multiplexed_scrnaseq_sce$demuxsnp)
 ```
 
 ```{r}
 hm <- Heatmap(counts(altExp(multiplexed_scrnaseq_sce, "SNP")),
-    column_split = multiplexed_scrnaseq_sce$knn,
+    column_split = multiplexed_scrnaseq_sce$demuxsnp,
     cluster_rows = FALSE,
     show_column_names = FALSE,
     cluster_column_slices = FALSE,
@@ -429,8 +429,8 @@ have now been correctly reclassed to this group, as well as a small number of
 cells from other groups.
 
 ```{r}
-hm <- Heatmap(counts(altExp(multiplexed_scrnaseq_sce, "SNP"))[, multiplexed_scrnaseq_sce$knn == "Hashtag5"],
-    column_split = multiplexed_scrnaseq_sce$seurat[multiplexed_scrnaseq_sce$knn == "Hashtag5"],
+hm <- Heatmap(counts(altExp(multiplexed_scrnaseq_sce, "SNP"))[, multiplexed_scrnaseq_sce$demuxsnp == "K5"],
+    column_split = multiplexed_scrnaseq_sce$seurat[multiplexed_scrnaseq_sce$demuxsnp == "K5"],
     cluster_rows = FALSE,
     show_column_names = FALSE,
     cluster_column_slices = FALSE,
@@ -455,7 +455,7 @@ as being from a singlet group, then split this into a training and test dataset.
 
 ```{r}
 sce_test <- multiplexed_scrnaseq_sce[, multiplexed_scrnaseq_sce$train == TRUE]
-sce_test$knn <- NULL
+sce_test$demuxsnp <- NULL
 sce_test$labels <- droplevels(sce_test$labels)
 sce_test
 
@@ -469,9 +469,9 @@ Comparing the predicted labels in the test dataset with the hidden high
 confidence labels, we see excellent agreement.
 
 ```{r}
-sce_test <- reassign(sce_test, k = 3, train_cells = sce_test$train2, predict_cells = sce_test$test)
+sce_test$demuxsnp <- reassign_centroid(sce_test, train_cells = sce_test$train2, predict_cells = sce_test$test)
 
-table(sce_test$labels[sce_test$test == TRUE], sce_test$knn[sce_test$test == TRUE])
+table(sce_test$labels[sce_test$test == TRUE], sce_test$demuxsnp[sce_test$test == TRUE])
 ```
 
 We can also show that that the model can correct misclassified cells when
@@ -479,7 +479,7 @@ predicted back on the training data. We create a new vector "labels2" which is
 initially identical to the labels used in training previously.
 
 ```{r}
-sce_test$knn <- NULL
+sce_test$demuxsnp <- NULL
 
 sce_test$labels2 <- droplevels(sce_test$labels)
 
@@ -495,12 +495,12 @@ sce_test$labels2[which(sce_test$labels2 == "Hashtag5")[1:25]] <- "Hashtag2"
 
 table(sce_test$labels, sce_test$labels2)
 
-sce_test <- reassign(sce_test,
+sce_test$demuxsnp <- reassign_centroid(sce_test,
     train_cells = sce_test$train,
     predict_cells = sce_test$train
 )
 
-table(sce_test$labels, sce_test$knn)
+table(sce_test$labels, sce_test$demuxsnp)
 ```
 
 For the knn Hashtag6 group, we see mostly good agreement with the original
@@ -510,8 +510,8 @@ corresponding SNP profile. In doing so, we can see that this most likely is a
 true Hashtag6.
 
 ```{r}
-hm <- Heatmap(counts(altExp(sce_test, "SNP"))[, sce_test$knn == "Hashtag6"],
-    column_split = sce_test$labels[sce_test$knn == "Hashtag6"],
+hm <- Heatmap(counts(altExp(sce_test, "SNP"))[, sce_test$demuxsnp == "K6"],
+    column_split = sce_test$labels[sce_test$demuxsnp == "K6"],
     cluster_rows = FALSE,
     show_column_names = FALSE,
     cluster_column_slices = FALSE,
