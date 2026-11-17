@@ -13,7 +13,7 @@
 #' @importFrom SummarizedExperiment rowRanges
 #' @importFrom BiocGenerics end
 #' @importFrom IRanges overlapsAny
-#' @import GenomeInfoDb
+#' @import Seqinfo
 #'
 #' @examples data(multiplexed_scrnaseq_sce, commonvariants_1kgenomes_subset)
 #' top_genes <- common_genes(multiplexed_scrnaseq_sce)
