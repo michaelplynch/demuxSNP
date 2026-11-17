@@ -36,6 +36,7 @@ library(ggpubr)
 library(dittoSeq)
 library(utils)
 library(EnsDb.Hsapiens.v86)
+library(Seqinfo)
 ```
 
 ```{r}
