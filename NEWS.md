@@ -1,3 +1,9 @@
+# demuxSNP 1.4.0
+
+Added reassign_centroid() function for improved handling of sparse and missing data.
+Added messaging to previous functions reassign(), reassign_jaccard() and reassign_balanced() to point towards reassign_centroid().
+Updated add_snps() function to add unfiltered data.
+
 # demuxSNP 0.99
 
 Submitted to Bioconductor

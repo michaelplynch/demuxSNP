@@ -50,15 +50,15 @@ filepath3 <- "C:/Users/michael.lynch/Culhane_Lab Dropbox/Shared_Lab_Folder/SNPs/
 my_vcf <- readVcf(filepath3, genome = "GRCh38")
 SNP_ranges <- SummarizedExperiment::rowRanges(my_vcf)
 
-my_vcf_inbound <- my_vcf[BiocGenerics::end(SNP_ranges) <= GenomeInfoDb::seqlengths(SNP_ranges)[as.character(GenomeInfoDb::seqnames(SNP_ranges))]]
+my_vcf_inbound <- my_vcf[BiocGenerics::end(SNP_ranges) <= Seqinfo::seqlengths(SNP_ranges)[as.character(Seqinfo::seqnames(SNP_ranges))]]
 SNP_ranges_inbound <- SummarizedExperiment::rowRanges(my_vcf_inbound)
 
 gns <- ensembldb::genes(EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86)
 
 top_gene_ranges <- gns[gns$gene_name %in% top_genes]
 
-GenomeInfoDb::seqlengths(SNP_ranges_inbound) <- NA
-GenomeInfoDb::seqlengths(top_gene_ranges) <- NA
+Seqinfo::seqlengths(SNP_ranges_inbound) <- NA
+Seqinfo::seqlengths(top_gene_ranges) <- NA
 
 include <- IRanges::overlapsAny(SNP_ranges_inbound, top_gene_ranges, type = "within")
 include[sample(seq_len(14000), 250)] <- TRUE

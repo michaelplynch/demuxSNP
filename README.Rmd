@@ -345,11 +345,11 @@ training data is the high confidence cells
 
 ```{r}
 set.seed(1)
-multiplexed_scrnaseq_sce <- reassign(multiplexed_scrnaseq_sce,
-    k = 10,
-    d = 10,
+multiplexed_scrnaseq_sce$labels<-as.character(multiplexed_scrnaseq_sce$labels)
+multiplexed_scrnaseq_sce$knn <- reassign_centroid(multiplexed_scrnaseq_sce,
     train_cells = multiplexed_scrnaseq_sce$train,
-    predict_cells = multiplexed_scrnaseq_sce$predict
+    predict_cells = multiplexed_scrnaseq_sce$predict,
+    min_cells = 5
 )
 
 table(multiplexed_scrnaseq_sce$knn)
@@ -406,7 +406,7 @@ as being from a singlet group, then split this into a training and test dataset.
 ```{r}
 sce_test <- multiplexed_scrnaseq_sce[, multiplexed_scrnaseq_sce$train == TRUE]
 sce_test$knn <- NULL
-sce_test$labels <- droplevels(sce_test$labels)
+#sce_test$labels <- droplevels(sce_test$labels)
 sce_test
 
 sce_test$train2 <- rep(FALSE, length(sce_test$train))
@@ -419,63 +419,9 @@ Comparing the predicted labels in the test dataset with the hidden high
 confidence labels, we see excellent agreement.
 
 ```{r}
-sce_test <- reassign(sce_test, k = 3, train_cells = sce_test$train2, predict_cells = sce_test$test)
+sce_test$knn <- reassign_centroid(sce_test, train_cells = sce_test$train2, predict_cells = sce_test$test, min_cells = 5)
 
 table(sce_test$labels[sce_test$test == TRUE], sce_test$knn[sce_test$test == TRUE])
-```
-
-We can also show that that the model can correct misclassified cells when
-predicted back on the training data. We create a new vector "labels2" which is
-initially identical to the labels used in training previously.
-
-```{r}
-sce_test$knn <- NULL
-
-sce_test$labels2 <- droplevels(sce_test$labels)
-
-table(sce_test$labels, sce_test$labels2)
-```
-
-We then randomly reassign 25 cells from Hashtag5 to Hashtag2 in the training
-data. Predicting the model back on itself we see that in the new predicted
-labels, the 25 altered have been correctly reclassified back to Hashtag5
-
-```{r}
-sce_test$labels2[which(sce_test$labels2 == "Hashtag5")[1:25]] <- "Hashtag2"
-
-table(sce_test$labels, sce_test$labels2)
-
-sce_test <- reassign(sce_test,
-    train_cells = sce_test$train,
-    predict_cells = sce_test$train
-)
-
-table(sce_test$labels, sce_test$knn)
-```
-
-For the knn Hashtag6 group, we see mostly good agreement with the original
-demuxmix labels. However, it appears one cell now being called a Hashtag6 was
-originally called Hashtag5. Again, we can investigate this by visualising the
-corresponding SNP profile. In doing so, we can see that this most likely is a
-true Hashtag6.
-
-```{r}
-hm <- Heatmap(counts(altExp(sce_test, "SNP"))[, sce_test$knn == "Hashtag6"],
-    column_split = sce_test$labels[sce_test$knn == "Hashtag6"],
-    cluster_rows = FALSE,
-    show_column_names = FALSE,
-    cluster_column_slices = FALSE,
-    column_names_rot = 45,
-    column_title_rot = -45,
-    row_title = "SNPs",
-    show_row_names = FALSE,
-    col = colors
-)
-
-draw(hm,
-    column_title = "knn Hashtag6 group split by demuxmix classification",
-    padding = unit(c(2, 15, 2, 2), "mm")
-)
 ```
 
 # References
