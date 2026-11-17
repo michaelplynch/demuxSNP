@@ -16,19 +16,11 @@
 #' mat = vartrix_consensus_snps, 
 #' thresh = 0.8)
 #' multiplexed_scrnaseq_sce<-reassign_centroid(multiplexed_scrnaseq_sce)
-<<<<<<< HEAD
-reassign_centroid<-function(sce,train_cells=sce$train,predict_cells=sce$predict,labels=sce$labels) {
-  message('demuxSNP does not distinguish between heterozygous and homozygous alt SNP loci and therefore should not be used for closely related samples')
-  snps<-counts(altExp(sce,"SNPcons"))
-  # find cluster multivariate modes
-  agg<-cluster_modes(snps_cons = snps[,train_cells], training_labels = labels[train_cells])
-=======
 reassign_centroid<-function(sce,train_cells=sce$train,predict_cells=sce$predict,labels=sce$labels,min_cells=30,key="Hashtag") {
   
   snps<-counts(altExp(sce,"SNPcons"))
   # find cluster multivariate modes
   agg<-cluster_modes(snps_cons = snps, training_labels = labels, min_cells = min_cells)
->>>>>>> upstream/RELEASE_3_20
   #print(head(agg))
   print(dim(agg))
   print(sum(agg))
